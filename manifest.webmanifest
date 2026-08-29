@@ -1,0 +1,9 @@
+{
+  "name": "CoatCheck*",
+  "short_name": "CoatCheck*",
+  "display": "standalone",
+  "background_color": "#0c0814",
+  "theme_color": "#0c0814",
+  "start_url": ".",
+  "icons": [{ "src": "icon-180.png", "sizes": "180x180", "type": "image/png" }]
+}

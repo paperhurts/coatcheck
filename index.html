@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CoatCheck*</title>
+
+<!-- Progressive Web App Tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CoatCheck*">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0c0814">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primer: #0c0814;
+    --panel: #140f22;
+    --ink: #f5edf7;
+    --faint: #988a9e;
+    --border: #281d3f;
+    --cutting-mat: rgba(244, 237, 244, 0.02);
+    
+    --good: #00f2fe;
+    --good-bg: rgba(0, 242, 254, 0.05);
+    --good-glow: rgba(0, 242, 254, 0.25);
+    
+    --meh: #bf86ff;
+    --meh-bg: rgba(191, 134, 255, 0.05);
+    --meh-glow: rgba(191, 134, 255, 0.2);
+    
+    --skip: #ff0055;
+    --skip-bg: rgba(255, 0, 85, 0.05);
+    --skip-glow: rgba(255, 0, 85, 0.2);
+    
+    --hot: #ff9f43;
+    --cold: #00d9eb;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--border) var(--primer);
+  }
+  
+  body {
+    background-color: var(--primer);
+    color: var(--ink);
+    font-family: "DM Mono", ui-monospace, monospace;
+    padding: calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 30px);
+    max-width: 760px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background-image: 
+      linear-gradient(var(--cutting-mat) 1px, transparent 1px),
+      linear-gradient(90deg, var(--cutting-mat) 1px, transparent 1px),
+      radial-gradient(circle at 47% 20%, rgba(85, 32, 111, 0.22), transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(0, 242, 254, 0.06), transparent 28%);
+    background-size: 24px 24px, 24px 24px, auto, auto;
+    overflow-x: hidden;
+  }
+  
+  .label {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 36px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 30px;
+  }
+  
+  header h1 {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-weight: 400;
+    font-size: 28px;
+    letter-spacing: -.03em;
+    cursor: pointer;
+  }
+  
+  header h1 span {
+    color: var(--good);
+  }
+  
+  header h1 .asterisk {
+    display: inline-block;
+    color: var(--meh);
+    transition: transform 0.6s ease;
+  }
+  
+  header h1:hover .asterisk {
+    transform: rotate(180deg);
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  
+  .btn {
+    background: #f5edf7;
+    color: var(--primer);
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 237, 247, 0.2);
+  }
+  
+  .btn:active {
+    transform: translateY(0);
+  }
+  
+  .btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  
+  .btn.secondary:hover {
+    background: rgba(245, 237, 247, 0.05);
+    border-color: var(--ink);
+    box-shadow: none;
+  }
+  
+  /* Location and Settings Drawer on-page */
+  .drawer {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    animation: slideDown .3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+  
+  .drawer.hidden {
+    display: none;
+  }
+  
+  .drawer h3 {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 400;
+  }
+  
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  
+  input[type="text"], input[type="number"] {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 10px;
+    outline: none;
+    width: 100%;
+  }
+  
+  input:focus {
+    border-color: var(--good);
+  }
+  
+  .divider {
+    text-align: center;
+    font-size: 10px;
+    color: var(--faint);
+    margin: 10px 0;
+    position: relative;
+  }
+  
+  .divider::before, .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35%;
+    height: 1px;
+    background: var(--border);
+  }
+  
+  .divider::before { left: 0; }
+  .divider::after { right: 0; }
+  
+  /* Settings sliders */
+  .setting-item {
+    margin-bottom: 16px;
+  }
+  
+  .setting-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  
+  .setting-label-row span {
+    font-weight: bold;
+    color: var(--good);
+  }
+  
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    outline: none;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--good);
+    cursor: pointer;
+    box-shadow: 0 0 6px var(--good);
+  }
+  
+  .intro {
+    max-width: 640px;
+    margin: 0 0 35px;
+  }
+  
+  .eyebrow {
+    font-size: 11px;
+    color: var(--skip);
+    margin-bottom: 12px;
+  }
+  
+  .intro h2 {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: clamp(38px, 7.5vw, 68px);
+    line-height: .92;
+    font-weight: 400;
+    letter-spacing: -.05em;
+  }
+  
+  .intro h2 em {
+    color: var(--good);
+    font-style: normal;
+    text-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+  }
+  
+  .intro p {
+    color: var(--faint);
+    font-family: Georgia, serif;
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 500px;
+    margin-top: 18px;
+  }
+  
+  .legend {
+    font-size: 10px;
+    color: var(--faint);
+    margin: 0 0 20px;
+    line-height: 1.6;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 1px;
+  }
+  
+  /* Weather Days Section */
+  .chip {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .chip:hover {
+    transform: translateY(-2px);
+  }
+  
+  .chip.good { border-color: rgba(0, 242, 254, 0.2); }
+  .chip.meh { border-color: rgba(191, 134, 255, 0.25); }
+  .chip.skip { border-color: rgba(255, 0, 85, 0.2); }
+  
+  .chip.good:hover {
+    border-color: var(--good);
+    box-shadow: 0 0 22px var(--good-glow);
+  }
+  
+  .chip.meh:hover {
+    border-color: var(--meh);
+    box-shadow: 0 0 22px var(--meh-glow);
+  }
+  
+  .chip.skip:hover {
+    border-color: var(--skip);
+    box-shadow: 0 0 22px var(--skip-glow);
+  }
+  
+  /* Hold active borders when expanded */
+  .chip.expanded.good { border-color: var(--good); box-shadow: 0 0 14px var(--good-glow); }
+  .chip.expanded.meh { border-color: var(--meh); box-shadow: 0 0 14px var(--meh-glow); }
+  .chip.expanded.skip { border-color: var(--skip); box-shadow: 0 0 14px var(--skip-glow); }
+  
+  .swatch {
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(105deg, rgba(255, 255, 255, 0.035), transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .swatch .name {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-weight: 400;
+    font-size: 26px;
+    letter-spacing: -.02em;
+    margin-top: 4px;
+    transition: color 0.3s ease;
+  }
+  
+  .good .swatch .name { color: var(--good); }
+  .meh .swatch .name { color: var(--meh); }
+  .skip .swatch .name { color: var(--skip); }
+  
+  .swatch .code {
+    font-size: 9px;
+    opacity: .65;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .chip .body {
+    padding: 14px 20px 18px;
+  }
+  
+  .dayline {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+  
+  .dayline .day {
+    font-family: Georgia, serif;
+    font-size: 17px;
+  }
+  
+  .dayline .day .date-sub {
+    font-family: "DM Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--faint);
+    margin-left: 6px;
+  }
+  
+  .dayline .temps {
+    font-variant-numeric: tabular-nums;
+    font-size: 18px;
+  }
+  
+  .dayline .temps b {
+    font-weight: 700;
+  }
+  
+  .dayline .temps .temp-sep {
+    color: var(--border);
+    margin: 0 2px;
+  }
+  
+  .dayline .temps .low {
+    color: var(--faint);
+  }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .stat {
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+  
+  .stat .k {
+    font-size: 9px;
+    color: var(--faint);
+    margin-bottom: 4px;
+  }
+  
+  .stat .v {
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+  
+  .stat .v small {
+    font-weight: 400;
+    color: var(--faint);
+    font-size: 11px;
+    margin-left: 2px;
+  }
+  
+  .good .verdict-text { color: var(--good); }
+  .meh .verdict-text { color: var(--meh); }
+  .skip .verdict-text { color: var(--skip); }
+  
+  /* Multi-color Pixel Art SVG Sprites */
+  .sprite-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid var(--border);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .chip:hover .sprite-container {
+    transform: scale(1.1) rotate(2deg);
+  }
+  
+  .pixel-sprite {
+    display: block;
+    width: 48px;
+    height: 48px;
+    filter: drop-shadow(0 0 6px var(--glow-col));
+  }
+  
+  .sprite-container.good .pixel-sprite { --glow-col: rgba(0, 242, 254, 0.25); }
+  .sprite-container.meh .pixel-sprite { --glow-col: rgba(191, 134, 255, 0.2); }
+  .sprite-container.skip .pixel-sprite { --glow-col: rgba(255, 0, 85, 0.2); }
+  
+  /* Bouncing sprite animation on hover */
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .chip:hover .pixel-sprite {
+    animation: bounce 0.6s infinite ease-in-out;
+  }
+  
+  /* Hourly Expanded Panel styles */
+  .hourly-panel {
+    border-top: 1px solid var(--border);
+    padding: 18px 20px 20px;
+    background: rgba(0, 0, 0, 0.15);
+    animation: slideDown .25s ease both;
+  }
+  
+  .hourly-panel.hidden {
+    display: none;
+  }
+  
+  .hourly-header {
+    font-size: 9px;
+    color: var(--faint);
+    margin-bottom: 12px;
+  }
+  
+  .hourly-timeline {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 4px;
+    margin-bottom: 15px;
+  }
+  
+  .hour-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 2px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .hour-block:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .hour-block.active {
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+  }
+  
+  .hour-block.good.active { border-color: var(--good); box-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
+  .hour-block.meh.active { border-color: var(--meh); box-shadow: 0 0 8px rgba(191, 134, 255, 0.4); }
+  .hour-block.skip.active { border-color: var(--skip); box-shadow: 0 0 8px rgba(255, 0, 85, 0.4); }
+  
+  .hour-num {
+    font-size: 8px;
+    color: var(--faint);
+    margin-bottom: 6px;
+  }
+  
+  .hour-block.active .hour-num {
+    color: var(--ink);
+    font-weight: bold;
+  }
+  
+  .hour-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  
+  .hour-block.good .hour-dot { background: var(--good); box-shadow: 0 0 4px var(--good); }
+  .hour-block.meh .hour-dot { background: var(--meh); box-shadow: 0 0 4px var(--meh); }
+  .hour-block.skip .hour-dot { background: var(--skip); box-shadow: 0 0 4px var(--skip); }
+  
+  .hourly-inspection {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    animation: fadeIn .2s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  .inspect-time {
+    font-size: 9px;
+    color: var(--faint);
+    margin-bottom: 6px;
+  }
+  
+  .inspect-row {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .inspect-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .inspect-pill strong {
+    color: var(--ink);
+  }
+  
+  .advice-box {
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+    margin-top: 8px;
+  }
+  
+  .advice-box.good { border-color: var(--good); }
+  .advice-box.meh { border-color: var(--meh); }
+  .advice-box.skip { border-color: var(--skip); }
+  .advice-box.hot { border-color: var(--hot); }
+  .advice-box.cold { border-color: var(--cold); }
+  
+  .advice-title {
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .advice-box.good .advice-title { color: var(--good); }
+  .advice-box.meh .advice-title { color: var(--meh); }
+  .advice-box.skip .advice-title { color: var(--skip); }
+  .advice-box.hot .advice-title { color: var(--hot); }
+  .advice-box.cold .advice-title { color: var(--cold); }
+  
+  .advice-text {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--faint);
+  }
+  
+  /* Mini Painter's Station Bench widget */
+  .paint-station {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-top: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
+  
+  .station-header {
+    font-size: 9px;
+    color: var(--faint);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .station-body {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  @media (min-width: 580px) {
+    .station-body {
+      flex-direction: row;
+    }
+  }
+  
+  .spray-can-interactive {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-width: 140px;
+  }
+  
+  /* Shake animation */
+  @keyframes extreme-shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-2px, -3px) rotate(-2deg); }
+    20% { transform: translate(-4px, 0px) rotate(2deg); }
+    30% { transform: translate(0px, 4px) rotate(-1deg); }
+    40% { transform: translate(2px, -1px) rotate(3deg); }
+    50% { transform: translate(-1px, 3px) rotate(-3deg); }
+    60% { transform: translate(-4px, 1px) rotate(1deg); }
+    70% { transform: translate(3px, 2px) rotate(-2deg); }
+    80% { transform: translate(-1px, -2px) rotate(2deg); }
+    90% { transform: translate(2px, 3px) rotate(-1deg); }
+    100% { transform: translate(1px, -2px) rotate(0deg); }
+  }
+  
+  .spray-can-interactive.shaking #can-sprite-holder {
+    animation: extreme-shake 0.1s infinite;
+  }
+  
+  .can-controls {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .wet-palette-tip {
+    flex: 1;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .bench-note-title {
+    font-size: 9px;
+    color: var(--meh);
+    margin-bottom: 6px;
+  }
+  
+  .wet-palette-tip p {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--faint);
+  }
+  
+  /* Splatter particles */
+  .splatter {
+    position: absolute;
+    border-radius: 1px;
+    background: var(--color);
+    pointer-events: none;
+    z-index: 9999;
+    animation: paint-fly 0.5s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
+  }
+  
+  @keyframes paint-fly {
+    0% {
+      transform: translate(0, 0) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--tx), var(--ty)) scale(0) rotate(180deg);
+      opacity: 0;
+    }
+  }
+  
+  footer {
+    margin-top: 35px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--faint);
+    line-height: 1.8;
+  }
+  
+  #status {
+    font-size: 12px;
+    color: var(--faint);
+    text-align: center;
+    padding: 40px 10px;
+    line-height: 1.6;
+  }
+  
+  .live-badge {
+    background: rgba(0, 242, 254, 0.12);
+    color: var(--good);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 8px;
+    border: 1px solid rgba(0, 242, 254, 0.2);
+  }
+  
+  .warning-badge {
+    background: rgba(191, 134, 255, 0.12);
+    color: var(--meh);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 8px;
+    border: 1px solid rgba(191, 134, 255, 0.2);
+  }
+  
+  @media (prefers-reduced-motion: no-preference) {
+    .chip {
+      animation: settle .35s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes settle {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 onclick="load()">Coat<span>Check</span><span class="asterisk">*</span></h1>
+  <div class="header-actions">
+    <button id="btn-toggle-settings" class="btn secondary" aria-label="Calibration Settings">⚙ Customize</button>
+    <button id="loc" class="btn" aria-label="Change location">Gainesville, FL ▾</button>
+  </div>
+</header>
+
+<!-- Collapsible Location Selector Drawer -->
+<div id="location-drawer" class="drawer hidden">
+  <h3>Select Your sky</h3>
+  <div class="location-options">
+    <button id="btn-geolocation" class="btn" style="width:100%; justify-content:center;">☉ Use My Current Location</button>
+    <div class="divider">or enter coordinates</div>
+    <div class="input-row">
+      <div>
+        <label class="label" style="display:block; margin-bottom:4px; font-size:8px;">Latitude</label>
+        <input type="number" id="input-lat" placeholder="29.6516" step="0.0001">
+      </div>
+      <div>
+        <label class="label" style="display:block; margin-bottom:4px; font-size:8px;">Longitude</label>
+        <input type="number" id="input-lon" placeholder="-82.3248" step="0.0001">
+      </div>
+    </div>
+    <div style="margin-bottom:15px;">
+      <label class="label" style="display:block; margin-bottom:4px; font-size:8px;">Location Name</label>
+      <input type="text" id="input-name" placeholder="Gainesville, FL">
+    </div>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button id="btn-close-location" class="btn secondary">Cancel</button>
+      <button id="btn-save-location" class="btn">Apply sky</button>
+    </div>
+  </div>
+</div>
+
+<!-- Collapsible Calibration Settings Drawer -->
+<div id="settings-drawer" class="drawer hidden">
+  <h3>Paint Calibration Settings</h3>
+  <p style="font-size:11px; color:var(--faint); margin-bottom:18px; line-height:1.5;">
+    Customize weather limits to match your tolerance. Changes will recalculate the entire dashboard in real-time!
+  </p>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Minimum Safe Temp</label>
+      <span><span id="val-tempMin">50</span>°F</span>
+    </div>
+    <input type="range" id="slider-tempMin" min="30" max="65" value="50">
+  </div>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Maximum Safe Temp</label>
+      <span><span id="val-tempMax">90</span>°F</span>
+    </div>
+    <input type="range" id="slider-tempMax" min="75" max="105" value="90">
+  </div>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Maximum Humidity</label>
+      <span><span id="val-rhMax">70</span>%</span>
+    </div>
+    <input type="range" id="slider-rhMax" min="50" max="90" value="70">
+  </div>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Max Rain Probability</label>
+      <span><span id="val-rainMax">20</span>%</span>
+    </div>
+    <input type="range" id="slider-rainMax" min="0" max="45" value="20">
+  </div>
+  
+  <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; margin-top:20px; border-top:1px solid var(--border); padding-top:15px;">
+    <button id="btn-reset-settings" class="btn secondary" style="font-size:10px; padding:6px 10px;">Reset to Defaults</button>
+    <button id="btn-close-settings" class="btn">Done</button>
+  </div>
+</div>
+
+<section class="intro">
+  <div class="eyebrow label">Miniature Painting weather desk · 08:00–18:00 window</div>
+  <h2>When the <em>air</em><br>lets you paint small worlds.</h2>
+  <p>A smart, reactive guide for spray priming, clear coat varnishing, and fine brushwork curing.</p>
+</section>
+
+<div class="legend label">
+  <span class="legend-item"><i class="legend-dot" style="background:var(--good); box-shadow: 0 0 6px var(--good);"></i>Paint Day</span>
+  <span class="legend-item"><i class="legend-dot" style="background:var(--meh); box-shadow: 0 0 6px var(--meh);"></i>Be Careful</span>
+  <span class="legend-item"><i class="legend-dot" style="background:var(--skip); box-shadow: 0 0 6px var(--skip);"></i>Bench Day</span>
+</div>
+
+<div id="days"></div>
+<div id="status">Checking the sky…</div>
+
+<!-- Interactive Hobby Station Widget -->
+<section class="paint-station">
+  <div class="station-header label">Interactive Hobbyist bench</div>
+  <div class="station-body">
+    <div class="spray-can-interactive" id="interactive-spray-can">
+      <div id="can-sprite-holder" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
+      <div class="can-controls">
+        <button id="btn-shake" class="btn primary">Shake Can 🫨</button>
+        <button id="btn-spray" class="btn secondary">Test Spray 💨</button>
+      </div>
+    </div>
+    <div class="wet-palette-tip">
+      <div class="bench-note-title label">Bench Assistant</div>
+      <p id="bench-status-text">Your hobby primer rattle can is resting on the workspace. Shake it thoroughly to mix those heavy miniature pigments!</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <button id="refresh" class="btn secondary" style="margin-bottom:12px;">Refresh Forecast</button>
+  <div id="updated">Checking skies...</div>
+  <div style="font-size:11px; margin-top:10px;">
+    by <a href="https://paperhurts.dev/" style="color:var(--good); text-decoration:none; border-bottom:1px dashed var(--good);" target="_blank" rel="noopener">paperhurts.dev*</a>
+  </div>
+  <div style="font-size:9px; opacity:.5; margin-top:8px;">Forecasts powered by National Weather Service API (Daytime 8:00 AM – 6:00 PM)</div>
+</footer>
+
+<script>
+const LS = window.localStorage;
+const DEFAULT_LOC = {lat: 29.6516, lon: -82.3248, name: "Gainesville, FL"};
+const NAMES = {
+  good: ["Perfect Prime", "Clean Basecoat", "Glass Finish", "Crisp Edge", "Brush Ready", "Golden Cure"],
+  meh:  ["Tacky Finish Warning", "Proceed with Caution", "High Dry-Tip Hazard", "Thin Coats Only", "Slight Moisture", "Watch the Horizon"],
+  skip: ["Frosting Danger", "Wash Out!", "Primer Orange-Peel", "Bench Painting Only", "Close the Lid", "Wet Paint Clogging"]
+};
+
+// Color palettes for cute pixel sprites
+const PALETTE = {
+  '.': 'transparent',
+  'k': '#140f1f', // thick outlines
+  'w': '#ffffff', // base white
+  's': '#7b8094', // cool steel gray
+  'l': '#c2c6d6', // shiny metal highlight
+  'y': '#ffcc00', // gold yellow
+  'o': '#e67e22', // wood handle brown
+  'r': '#ff0055', // blood pink / red
+  'p': '#9b59b6', // warlock purple
+  'b': '#00d9eb', // crystal cyan
+  'g': '#2ecc71', // greenskin green
+  'c': '#ff7aa2', // cute rosy cheek pink
+  'u': '#2980b9'  // shadow blue
+};
+
+// 16x16 Pixel Art Sprite Database
+const SPRITES = {
+  perfect: [
+    "......kk........",
+    "....kkllkk.bb...",
+    "....kllllk.bwwb.",
+    "....kkkkkk..bb..",
+    "...kssssssk.....",
+    "..kssssssssk....",
+    ".kssgwwgsssk....",
+    ".ksgkkkkgssk....",
+    ".ksgkkkkgssk....",
+    ".ksgwwgwwgsk....",
+    ".ksgwwgwwgsk....",
+    ".ksgkkkkggsk....",
+    ".kssgggggssk....",
+    "..ksssssssk.....",
+    "...kkkkkkk......",
+    "................"
+  ],
+  good: [
+    ".....kkkk.......",
+    ".....kwwk.......",
+    "....kwwwwk......",
+    "....kkkkkk..kk..",
+    "...kssssssk.ksk.",
+    "..ksssssssskksk.",
+    ".kssppwwppskksk.",
+    ".ksppkkkppskkok.",
+    ".ksppkkkppskkok.",
+    ".ksppwwrwppskkk.",
+    ".ksppwwrwppskbb.",
+    ".kssppppppskbbb.",
+    ".kssssssssskbb..",
+    "..ksssssssk.k...",
+    "...kkkkkkk......",
+    "................"
+  ],
+  cloudy: [
+    "......kkkk......",
+    "....kkwwwwkk....",
+    "...kwwwwwwwwkk..",
+    "..kwwwwwwwwwwwwk",
+    ".kwwwkwwkwwkwwwk",
+    ".kwwkkkkkkkkwwwk",
+    ".kwwkwwkwwkwwwwk",
+    ".kwwkwwwwwkwwwwk",
+    "..kwwwwwwwwwwwwk",
+    "...kkkkkkkkkkkk.",
+    ".....koook......",
+    ".....ksssk......",
+    ".....ksssk......",
+    ".....kbbbk......",
+    "......kbbk......",
+    ".......kk......."
+  ],
+  humid: [
+    ".....kkkk.......",
+    ".....kwwk.......",
+    "....kwwwwk......",
+    "....kkkkkk......",
+    "...kssssssk.....",
+    "..kssssssssk.bb.",
+    ".kssyywwyysskbb.",
+    ".ksyykkkyysskbb.",
+    ".ksyykkkyyssk...",
+    ".ksyywwrwysk.bb.",
+    ".ksyywwwyysk.bb.",
+    ".kssyyyyyysk.b..",
+    ".kssssssssk.....",
+    "..ksssssssk.....",
+    "...kkkkkkk......",
+    "................"
+  ],
+  rainy: [
+    "....kkkkk.......",
+    "..kkwwwwwkk.....",
+    ".kwwwwwwwwwk....",
+    "kwwwwwwwwwwwk...",
+    ".kkkkkkkkkkk....",
+    "....b....b......",
+    "......b....b....",
+    "....kkkkkk......",
+    "...ksllsslks....",
+    "...kllllllks....",
+    "...klkllklks....",
+    "...kllllllks....",
+    "...ksllsslks....",
+    "....kssssk......",
+    ".....kkkk.......",
+    "................"
+  ],
+  cold: [
+    "....bbbbbbbb....",
+    "...bkkkkkkkkb...",
+    "..bkoooookooob..",
+    ".bkoooookoooobb.",
+    "bkoooookoooobbb.",
+    "bkkkkkkkkkkkbb..",
+    "bkssssssssskbb..",
+    "bkssssssssskb...",
+    "bkssssssssskb...",
+    "bkrrrrrrrrrkb...",
+    "bkrrrrrrrrrkb...",
+    "bkrrrrrrrrrkb...",
+    "..bkkkkkkkbb....",
+    "...bbbbbbbb.....",
+    "....bbbbbb......",
+    "................"
+  ],
+  hot: [
+    "....kkkkkk......",
+    "...kssssssk.....",
+    "..kskkkkkkssk...",
+    "..ksssssssssk...",
+    ".kssrrrrrrsssk..",
+    ".ksrkkkkkkrssk..",
+    "ksrkkkkkkkkrsk..",
+    "ksrkwwkkwwkrsk..",
+    "ksrkwwkkwwkrsk..",
+    "ksrkkkkkkkkrsk..",
+    "ksrkrrkkrrkrsk..",
+    ".ksrkkkkkkrssk..",
+    ".kssrrrrrrsssk..",
+    "..ksssssssssk...",
+    "...kkkkkkkkk....",
+    "................"
+  ]
+};
+
+// Generates an optimized path-based crisp SVG pixel sprite
+function makeSpriteSVG(grid, size = 48) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  let pathsByColor = {};
+  
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const char = grid[r][c];
+      if (char !== '.' && char !== ' ' && PALETTE[char]) {
+        const color = PALETTE[char];
+        if (!pathsByColor[color]) {
+          pathsByColor[color] = [];
+        }
+        pathsByColor[color].push(`M${c},${r}h1v1h-1z`);
+      }
+    }
+  }
+  
+  let pathsHTML = '';
+  for (const [color, paths] of Object.entries(pathsByColor)) {
+    pathsHTML += `<path d="${paths.join(' ')}" fill="${color}" shape-rendering="crispEdges" />`;
+  }
+  
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cols} ${rows}" width="${size}" height="${size}" class="pixel-sprite">
+    ${pathsHTML}
+  </svg>`;
+}
+
+function sprite(spriteName, verdict) {
+  const grid = SPRITES[spriteName] || SPRITES.good;
+  return `<div class="sprite-container ${verdict}" role="img" aria-label="Cute weather sprite representing ${spriteName}">
+    ${makeSpriteSVG(grid, 48)}
+  </div>`;
+}
+
+// User Settings Manager
+function getSettings() {
+  return {
+    tempMin: parseFloat(LS.getItem("cc_temp_min") || "50"),
+    tempMax: parseFloat(LS.getItem("cc_temp_max") || "90"),
+    rhMax: parseFloat(LS.getItem("cc_rh_max") || "70"),
+    rainMax: parseFloat(LS.getItem("cc_rain_max") || "20"),
+    
+    // Auto-calculate cautious/meh margins
+    tempMinMeh: parseFloat(LS.getItem("cc_temp_min") || "50") - 5,
+    tempMaxMeh: parseFloat(LS.getItem("cc_temp_max") || "90") + 5,
+    rhMaxMeh: parseFloat(LS.getItem("cc_rh_max") || "70") + 10,
+    rainMaxMeh: parseFloat(LS.getItem("cc_rain_max") || "20") + 20
+  };
+}
+
+function getLoc() {
+  try { return JSON.parse(LS.getItem("cc_loc")) || DEFAULT_LOC; }
+  catch(e) { return DEFAULT_LOC; }
+}
+
+async function fetchJSON(url, tries=3) {
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(url, {headers: {"Accept": "application/geo+json"}});
+      if (r.ok) return await r.json();
+    } catch(e) {}
+    await new Promise(res => setTimeout(res, 600 * (i + 1)));
+  }
+  throw new Error("NWS unreachable");
+}
+
+async function getHourlyURL(loc) {
+  const key = `cc_grid_${loc.lat},${loc.lon}`;
+  const cached = LS.getItem(key);
+  if (cached) return cached;
+  const pts = await fetchJSON(`https://api.weather.gov/points/${loc.lat},${loc.lon}`);
+  const url = pts.properties.forecastHourly;
+  LS.setItem(key, url);
+  return url;
+}
+
+// Determines if a full day or individual hour is Good, Meh, or Skip based on settings
+function verdict(d) {
+  const settings = getSettings();
+  let idealHours = 0;
+  let acceptableHours = 0;
+  
+  for (const p of d.hourly) {
+    const t = p.temperature;
+    const rh = p.relativeHumidity?.value ?? 50;
+    const rain = p.probabilityOfPrecipitation?.value ?? 0;
+    
+    // Ideal hourly check (strictly 40-60% humidity within comfortable limits)
+    const isTempIdeal = t >= settings.tempMin && t <= settings.tempMax;
+    const isRhIdeal = rh >= 40 && rh <= 60;
+    const isRainIdeal = rain <= settings.rainMax;
+    
+    if (isTempIdeal && isRhIdeal && isRainIdeal) {
+      idealHours++;
+    } else {
+      // Acceptable/cautious hourly check (meh limits)
+      const isTempMeh = t >= settings.tempMinMeh && t <= settings.tempMaxMeh;
+      const isRhMeh = rh <= settings.rhMax;
+      const isRainMeh = rain <= settings.rainMaxMeh;
+      
+      if (isTempMeh && isRhMeh && isRainMeh) {
+        acceptableHours++;
+      }
+    }
+  }
+  
+  // Good: At least 1 hour in the ideal 40-60% humidity priming window
+  if (idealHours >= 1) {
+    return "good";
+  }
+  // Meh: No ideal hours, but at least 2 acceptable cautious hours
+  if (acceptableHours >= 2) {
+    return "meh";
+  }
+  return "skip";
+}
+
+function calculatePeriodVerdict(p, settings) {
+  const t = p.temperature;
+  const rh = p.relativeHumidity?.value ?? 50;
+  const rain = p.probabilityOfPrecipitation?.value ?? 0;
+
+  // Ideal hourly window: 40-60% relative humidity
+  const isTempIdeal = t >= settings.tempMin && t <= settings.tempMax;
+  const isRhIdeal = rh >= 40 && rh <= 60;
+  const isRainIdeal = rain <= settings.rainMax;
+
+  if (isTempIdeal && isRhIdeal && isRainIdeal) {
+    return "good";
+  }
+
+  // Cautious hourly window
+  const isTempMeh = t >= settings.tempMinMeh && t <= settings.tempMaxMeh;
+  const isRhMeh = rh <= settings.rhMax;
+  const isRainMeh = rain <= settings.rainMaxMeh;
+
+  if (isTempMeh && isRhMeh && isRainMeh) {
+    return "meh";
+  }
+
+  return "skip";
+}
+
+// Maps specific aggregate conditions to specialized cute sprites
+function getDaySprite(d) {
+  if (d.rain > 30) return "rainy";
+  if (d.rh > 75) return "humid";
+  if (d.hi > 92) return "hot";
+  if (d.lo < 48) return "cold";
+  if (d.verdict === "good") return "perfect";
+  if (d.verdict === "meh") return "cloudy";
+  return "good"; // Happy paint pot standing by brush
+}
+
+// Weather Aggregation for 8:00 AM – 6:00 PM Window
+function aggregate(periods) {
+  const days = new Map();
+  const todayStr = new Date().toISOString().slice(0, 10);
+  
+  for (const p of periods) {
+    const dt = new Date(p.startTime);
+    const dkey = p.startTime.slice(0, 10);
+    
+    if (!days.has(dkey)) {
+      days.set(dkey, {
+        date: dt,
+        hi: -Infinity,
+        lo: Infinity,
+        rhs: [],
+        rains: [],
+        dayHrs: 0,
+        hourly: []
+      });
+    }
+    
+    const d = days.get(dkey);
+    d.hi = Math.max(d.hi, p.temperature);
+    d.lo = Math.min(d.lo, p.temperature);
+    
+    const h = dt.getHours();
+    if (h >= 8 && h < 18) { // Prime painting window
+      d.dayHrs++;
+      if (p.relativeHumidity?.value != null) d.rhs.push(p.relativeHumidity.value);
+      if (p.probabilityOfPrecipitation?.value != null) d.rains.push(p.probabilityOfPrecipitation.value);
+      d.hourly.push(p);
+    }
+  }
+  
+  return [...days.values()]
+    .filter(d => {
+      const dkey = d.date.toISOString().slice(0, 10);
+      return dkey === todayStr || d.dayHrs >= 3;
+    })
+    .map(d => {
+      d.rh = d.rhs.length ? Math.round(d.rhs.reduce((a,b)=>a+b)/d.rhs.length) : 50;
+      d.rain = d.rains.length ? Math.max(...d.rains) : 0;
+      d.verdict = verdict(d);
+      return d;
+    });
+}
+
+// Tailored Miniature Painting Weather Advisory
+function getPainterAdvice(t, rh, rain) {
+  const settings = getSettings();
+  
+  if (rain > settings.rainMaxMeh) {
+    return {
+      title: "🌧️ RAIN OUT!",
+      text: "Precipitation risks are high! Rain and moisture will completely wash out acrylic paint and ruin curing. Paint strictly indoors with standard brushwork today.",
+      type: "skip"
+    };
+  }
+  if (rh > settings.rhMaxMeh) {
+    return {
+      title: "🌫️ FROSTING ALERT",
+      text: "Extreme humidity! Aerosol spray cans and clear varnishes will trap microscopic water droplets, curing with a cloudy white 'frosting' coat. Stay far away from rattle cans!",
+      type: "skip"
+    };
+  }
+  if (t > settings.tempMax) {
+    return {
+      title: "🥵 DRY-TIP WARNING",
+      text: "It is too hot! Acrylic paint will evaporate on your bristles before they touch the miniature, clogging detail. Use a wet palette, thin with drying retarder, or stay in A/C.",
+      type: "hot"
+    };
+  }
+  if (t < settings.tempMin) {
+    return {
+      title: "🥶 SPUTTER HAZARD",
+      text: "Chilly air! Aerosol propellants won't gasify evenly, spraying paint in thick drops (orange-peel effect). Warm your spray cans inside warm water before spraying!",
+      type: "cold"
+    };
+  }
+  if (rh > settings.rhMax) {
+    return {
+      title: "⏳ TACKY CURING",
+      text: "Sticky humidity. Paint primer will take double the time to dry and may remain tacky. Give models plenty of resting time before handling or applying washes.",
+      type: "meh"
+    };
+  }
+  if (t >= 60 && t <= 82 && rh >= 35 && rh <= 62 && rain <= 10) {
+    return {
+      title: "✨ THE GOLDEN RATIO",
+      text: "Flawless painting atmosphere! Primers will atomize perfectly smooth, varnishes will cure 100% crystal-clear, and paints will flow with master-level glide. Spray today!",
+      type: "good"
+    };
+  }
+  return {
+    title: "👍 GOOD TO PAINT",
+    text: "Weather is clean and stable. Priming, airbrushing, and basecoating will perform very nicely. Do a tiny test spray on a sprue just to calibrate your distance!",
+    type: "good"
+  };
+}
+
+function selectHour(dayIndex, hourIndex, updateDOM = true) {
+  const lastData = LS.getItem("cc_last");
+  if (!lastData) return;
+  const { days } = JSON.parse(lastData);
+  const day = days[dayIndex];
+  if (!day) return;
+  const hPeriod = day.hourly[hourIndex];
+  if (!hPeriod) return;
+  
+  const hTime = new Date(hPeriod.startTime);
+  const hDisplay = hTime.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  const temp = hPeriod.temperature;
+  const rh = hPeriod.relativeHumidity?.value ?? 50;
+  const rain = hPeriod.probabilityOfPrecipitation?.value ?? 0;
+  
+  const advice = getPainterAdvice(temp, rh, rain);
+  
+  const html = `
+    <div class="inspection-stats">
+      <div class="inspect-time label">${hDisplay} Forecast Details</div>
+      <div class="inspect-row">
+        <span class="inspect-pill">Temp: <strong>${temp}°F</strong></span>
+        <span class="inspect-pill">Humidity: <strong>${rh}%</strong></span>
+        <span class="inspect-pill">Rain: <strong>${rain}%</strong></span>
+      </div>
+    </div>
+    <div class="advice-box ${advice.type}">
+      <div class="advice-title label">${advice.title}</div>
+      <p class="advice-text">${advice.text}</p>
+    </div>
+  `;
+  
+  if (updateDOM) {
+    const el = document.getElementById(`inspect-${dayIndex}`);
+    if (el) {
+      el.innerHTML = html;
+      
+      const blocks = document.querySelectorAll(`#hourly-${dayIndex} .hour-block`);
+      blocks.forEach((b, idx) => {
+        if (idx === hourIndex) {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+    }
+  } else {
+    return html;
+  }
+}
+
+function toggleHourly(index) {
+  const panel = document.getElementById(`hourly-${index}`);
+  const card = document.querySelector(`.chip[data-index="${index}"]`);
+  if (!panel) return;
+  
+  const isHidden = panel.classList.contains("hidden");
+  
+  document.querySelectorAll(".hourly-panel").forEach((p, idx) => {
+    if (idx !== index) {
+      p.classList.add("hidden");
+      const c = document.querySelector(`.chip[data-index="${idx}"]`);
+      if (c) c.classList.remove("expanded");
+    }
+  });
+  
+  if (isHidden) {
+    panel.classList.remove("hidden");
+    card.classList.add("expanded");
+    selectHour(index, 0);
+  } else {
+    panel.classList.add("hidden");
+    card.classList.remove("expanded");
+  }
+}
+
+function render(days, stale) {
+  const el = document.getElementById("days");
+  if (!days || days.length === 0) {
+    el.innerHTML = `<div class="empty-state" style="text-align:center; padding: 40px; color:var(--faint);">No forecast loaded. Pull or click refresh!</div>`;
+    return;
+  }
+  
+  el.innerHTML = days.map((d, i) => {
+    const spriteName = getDaySprite(d);
+    const name = NAMES[d.verdict][i % NAMES[d.verdict].length];
+    const dayName = d.date.toLocaleDateString(undefined, { weekday: "long" });
+    const dateStr = d.date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    
+    return `
+      <div class="chip ${d.verdict}" data-index="${i}" onclick="toggleHourly(${i})">
+        <div class="swatch">
+          <div style="flex:1; padding-right:12px;">
+            <div class="code label">FIELD LOG · CC-${String(d.rh).padStart(2,"0")}${String(d.rain).padStart(2,"0")}</div>
+            <div class="name">${name}</div>
+          </div>
+          ${sprite(spriteName, d.verdict)}
+        </div>
+        <div class="body">
+          <div class="dayline">
+            <div class="day"><strong>${dayName}</strong><span class="date-sub">${dateStr}</span></div>
+            <div class="temps"><b>${d.hi}°</b><span class="temp-sep">/</span><span class="low">${d.lo}°</span></div>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="k label">Humidity</div>
+              <div class="v">${d.rh ?? "–"}<small>% avg</small></div>
+            </div>
+            <div class="stat">
+              <div class="k label">Rain Probability</div>
+              <div class="v">${d.rain ?? "–"}<small>% max</small></div>
+            </div>
+            <div class="stat">
+              <div class="k label">Hobby Verdict</div>
+              <div class="v verdict-text">${{good:"Paint Day", meh:"Careful", skip:"Bench Day"}[d.verdict]}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Detailed Hourly Timelines -->
+        <div class="hourly-panel hidden" id="hourly-${i}" onclick="event.stopPropagation()">
+          <div class="hourly-header label">Hourly Painting Suitability (8:00 AM – 6:00 PM)</div>
+          <div class="hourly-timeline">
+            ${d.hourly.map((hPeriod, hpIndex) => {
+              const hTime = new Date(hPeriod.startTime).getHours();
+              const displayHour = hTime === 12 ? "12" : hTime > 12 ? `${hTime - 12}` : `${hTime}`;
+              const hSettings = getSettings();
+              const hVerdict = calculatePeriodVerdict(hPeriod, hSettings);
+              return `
+                <div class="hour-block ${hVerdict}" 
+                     data-day="${i}" 
+                     data-hour="${hpIndex}" 
+                     onclick="selectHour(${i}, ${hpIndex})">
+                  <span class="hour-num">${displayHour}</span>
+                  <span class="hour-dot"></span>
+                </div>
+              `;
+            }).join("")}
+          </div>
+          <div class="hourly-inspection" id="inspect-${i}"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+  
+  // Set default inspector for each day drawer
+  days.forEach((d, i) => {
+    if (d.hourly && d.hourly.length > 0) {
+      selectHour(i, 0, false);
+    }
+  });
+
+  document.getElementById("status").style.display = "none";
+  document.getElementById("updated").innerHTML =
+    (stale ? "<span class='warning-badge'>⚠ OFFLINE FORECAST</span> · " : "<span class='live-badge'>● LIVE</span> Updated ") + 
+    new Date(stale || Date.now()).toLocaleString();
+}
+
+async function load() {
+  const loc = getLoc();
+  document.getElementById("loc").textContent = loc.name + " ▾";
+  document.getElementById("status").style.display = "block";
+  document.getElementById("status").textContent = "Reading the sky maps…";
+  
+  try {
+    const url = await getHourlyURL(loc);
+    const fc = await fetchJSON(url);
+    const periods = fc.properties.periods;
+    
+    // Cache raw forecast data for sliders recalibration offline
+    LS.setItem("cc_raw_periods", JSON.stringify(periods));
+    
+    const days = aggregate(periods);
+    LS.setItem("cc_last", JSON.stringify({t: Date.now(), days}));
+    render(days, null);
+  } catch(e) {
+    console.warn("Forecast fetch failed; attempting local fallback...", e);
+    const last = LS.getItem("cc_last");
+    if (last) {
+      const { t, days } = JSON.parse(last);
+      days.forEach(d => d.date = new Date(d.date));
+      render(days, t);
+    } else {
+      document.getElementById("status").textContent =
+        "Couldn't fetch weather from National Weather Service. Please check your connectivity and try again!";
+    }
+  }
+}
+
+// Triggers instant UI recalculation on settings updates
+function recalculateAndRender() {
+  const raw = LS.getItem("cc_raw_periods");
+  if (!raw) return;
+  try {
+    const periods = JSON.parse(raw);
+    const days = aggregate(periods);
+    const ccLast = LS.getItem("cc_last");
+    let t = Date.now();
+    if (ccLast) {
+      t = JSON.parse(ccLast).t;
+    }
+    LS.setItem("cc_last", JSON.stringify({t, days}));
+    render(days, t);
+  } catch(e) {
+    console.error("Instant recalibration error", e);
+  }
+}
+
+// Custom location selector initialization
+function initLocationAndSettingsUI() {
+  const locBtn = document.getElementById("loc");
+  const locDrawer = document.getElementById("location-drawer");
+  const settingsBtn = document.getElementById("btn-toggle-settings");
+  const settingsDrawer = document.getElementById("settings-drawer");
+  
+  locBtn.onclick = () => {
+    locDrawer.classList.toggle("hidden");
+    settingsDrawer.classList.add("hidden");
+    const cur = getLoc();
+    document.getElementById("input-lat").value = cur.lat;
+    document.getElementById("input-lon").value = cur.lon;
+    document.getElementById("input-name").value = cur.name;
+  };
+  
+  document.getElementById("btn-close-location").onclick = () => {
+    locDrawer.classList.add("hidden");
+  };
+  
+  settingsBtn.onclick = () => {
+    settingsDrawer.classList.toggle("hidden");
+    locDrawer.classList.add("hidden");
+  };
+  
+  document.getElementById("btn-close-settings").onclick = () => {
+    settingsDrawer.classList.add("hidden");
+  };
+  
+  // Save custom location
+  document.getElementById("btn-save-location").onclick = () => {
+    const lat = parseFloat(document.getElementById("input-lat").value);
+    const lon = parseFloat(document.getElementById("input-lon").value);
+    const name = document.getElementById("input-name").value.trim() || `${lat}, ${lon}`;
+    
+    if (isNaN(lat) || isNaN(lon)) {
+      alert("Coordinates must be valid decimals.");
+      return;
+    }
+    
+    LS.setItem("cc_loc", JSON.stringify({lat, lon, name}));
+    locDrawer.classList.add("hidden");
+    // Clear grids cache for new location
+    LS.removeItem(`cc_grid_${lat},${lon}`);
+    load();
+  };
+  
+  // Geolocation API with automatic NWS city reverse-resolving
+  document.getElementById("btn-geolocation").onclick = () => {
+    const geoBtn = document.getElementById("btn-geolocation");
+    geoBtn.textContent = "Scanning GPS satellite... 🛰️";
+    
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = parseFloat(pos.coords.latitude.toFixed(4));
+      const lon = parseFloat(pos.coords.longitude.toFixed(4));
+      document.getElementById("input-lat").value = lat;
+      document.getElementById("input-lon").value = lon;
+      
+      try {
+        geoBtn.textContent = "Locating city name... 🗺️";
+        const pts = await fetchJSON(`https://api.weather.gov/points/${lat},${lon}`);
+        const city = pts.properties.relativeLocation.properties.city;
+        const state = pts.properties.relativeLocation.properties.state;
+        const name = `${city}, ${state}`;
+        
+        document.getElementById("input-name").value = name;
+        LS.setItem("cc_loc", JSON.stringify({lat, lon, name}));
+        locDrawer.classList.add("hidden");
+        load();
+      } catch (e) {
+        const name = `${lat}, ${lon}`;
+        document.getElementById("input-name").value = name;
+        LS.setItem("cc_loc", JSON.stringify({lat, lon, name}));
+        locDrawer.classList.add("hidden");
+        load();
+      }
+    }, (err) => {
+      geoBtn.textContent = "GPS Access Denied! ❌";
+      setTimeout(() => { geoBtn.textContent = "☉ Use My Current Location"; }, 2500);
+      alert("Browser location services are disabled or unavailable.");
+    });
+  };
+  
+  // Sliders binding
+  const sliders = [
+    { key: "cc_temp_min", id: "tempMin", def: "50" },
+    { key: "cc_temp_max", id: "tempMax", def: "90" },
+    { key: "cc_rh_max", id: "rhMax", def: "70" },
+    { key: "cc_rain_max", id: "rainMax", def: "20" }
+  ];
+  
+  sliders.forEach(s => {
+    const val = LS.getItem(s.key) || s.def;
+    LS.setItem(s.key, val);
+    
+    const sliderEl = document.getElementById(`slider-${s.id}`);
+    const valEl = document.getElementById(`val-${s.id}`);
+    
+    if (sliderEl && valEl) {
+      sliderEl.value = val;
+      valEl.textContent = val;
+      
+      sliderEl.oninput = (e) => {
+        valEl.textContent = e.target.value;
+        LS.setItem(s.key, e.target.value);
+        recalculateAndRender();
+      };
+    }
+  });
+  
+  // Reset sliders defaults
+  document.getElementById("btn-reset-settings").onclick = () => {
+    sliders.forEach(s => {
+      LS.setItem(s.key, s.def);
+      const sliderEl = document.getElementById(`slider-${s.id}`);
+      const valEl = document.getElementById(`val-${s.id}`);
+      if (sliderEl && valEl) {
+        sliderEl.value = s.def;
+        valEl.textContent = s.def;
+      }
+    });
+    recalculateAndRender();
+  };
+}
+
+/* Procedural Rattle Can Synth and Spray Hiss via Web Audio API */
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+// Metallic "Tink/Clack" synth sound
+function playRattleSound(duration = 0.08, pitch = 850) {
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  const filter = audioCtx.createBiquadFilter();
+  
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(pitch, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(pitch / 4, audioCtx.currentTime + duration);
+  
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(pitch * 1.6, audioCtx.currentTime);
+  filter.Q.setValueAtTime(12, audioCtx.currentTime); // high Q gives metallic resonance
+  
+  gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+  
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration + 0.01);
+}
+
+// White-noise bandpass filtered spray sound
+function playSpraySound() {
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const duration = 0.8;
+  const bufferSize = audioCtx.sampleRate * duration;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
+  
+  const filter2 = audioCtx.createBiquadFilter();
+  filter2.type = 'bandpass';
+  filter2.frequency.setValueAtTime(4500, audioCtx.currentTime);
+  filter2.Q.setValueAtTime(1.2, audioCtx.currentTime);
+  
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.0, audioCtx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.14, audioCtx.currentTime + 0.08); // attack
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration - 0.05); // decay
+  
+  source.connect(filter);
+  filter.connect(filter2);
+  filter2.connect(gain);
+  gain.connect(audioCtx.destination);
+  
+  source.start();
+}
+
+let shakeInterval = null;
+function startShakingEffect() {
+  if (shakeInterval) return;
+  
+  const container = document.getElementById("interactive-spray-can");
+  container.classList.add("shaking");
+  
+  document.getElementById("bench-status-text").textContent = "🫨 CLACK-CLACK-CLACK! Shaking the spray primer can at hyper-speed! Mixing heavy pigment sediment...";
+  
+  // Play double metallic ball rattle clacks in quick succession
+  shakeInterval = setInterval(() => {
+    playRattleSound(0.09, 880);
+    setTimeout(() => {
+      playRattleSound(0.06, 740);
+    }, 55 + Math.random() * 30);
+  }, 160);
+  
+  // Stop after 1.5 seconds
+  setTimeout(() => {
+    stopShakingEffect();
+  }, 1500);
+}
+
+function stopShakingEffect() {
+  if (shakeInterval) {
+    clearInterval(shakeInterval);
+    shakeInterval = null;
+  }
+  const container = document.getElementById("interactive-spray-can");
+  if (container) container.classList.remove("shaking");
+  document.getElementById("bench-status-text").textContent = "✨ Can is perfectly shaken! Aerosol paint particles are 100% mixed. Press 'Test Spray' to blow the nozzle out!";
+}
+
+// Fun interactive visual paint splatter
+function triggerSprayPaint(event) {
+  playSpraySound();
+  
+  const descriptions = [
+    "💨 Pssssshhh! Clean atomized spray mist. Perfect primer coat flatness!",
+    "💨 Pssssshhh! Nozzle clear! Air pressure looks very healthy.",
+    "💨 Pssssshhh! Spray looks super flat, zero clumps or orange-peel sputters.",
+    "💨 Pssssshhh! Test pattern is perfectly even. Ready for tiny miniatures!"
+  ];
+  document.getElementById("bench-status-text").textContent = descriptions[Math.floor(Math.random() * descriptions.length)];
+  
+  const btn = document.getElementById("btn-spray");
+  const rect = btn.getBoundingClientRect();
+  const startX = rect.left + rect.width / 2 + window.scrollX;
+  const startY = rect.top + window.scrollY;
+  
+  // Rich array of citadel / miniature paint themed colors
+  const miniatureColors = [
+    "#00f2fe", // Warpstone Cyan
+    "#bf86ff", // Emperor Purple
+    "#ff0055", // Blood for the Blood God Pink-Red
+    "#2ecc71", // Greenskin Ork
+    "#ff9f43", // Fiery Troll Orange
+    "#ffcc00", // Auric Armour Gold
+    "#ff7aa2", // Warlock Pink
+    "#00a8ff"  // Macragge Blue
+  ];
+  
+  // Spawn 16 flying pixel dots
+  for (let i = 0; i < 16; i++) {
+    const el = document.createElement("div");
+    el.className = "splatter";
+    
+    const color = miniatureColors[Math.floor(Math.random() * miniatureColors.length)];
+    el.style.setProperty("--color", color);
+    
+    // Begin at nozzle position
+    el.style.left = `${startX}px`;
+    el.style.top = `${startY}px`;
+    
+    // Cone vector: travel upwards/outwards
+    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.9; // cone spread
+    const speed = 55 + Math.random() * 85;
+    const tx = Math.cos(angle) * speed;
+    const ty = Math.sin(angle) * speed;
+    
+    el.style.setProperty("--tx", `${tx}px`);
+    el.style.setProperty("--ty", `${ty}px`);
+    
+    const dSize = 4 + Math.floor(Math.random() * 8);
+    el.style.width = `${dSize}px`;
+    el.style.height = `${dSize}px`;
+    
+    document.body.appendChild(el);
+    setTimeout(() => { el.remove(); }, 500);
+  }
+}
+
+// Bind interactive workstation elements
+function initHobbyBench() {
+  document.getElementById("can-sprite-holder").innerHTML = makeSpriteSVG(SPRITES.perfect, 80);
+  document.getElementById("btn-shake").onclick = startShakingEffect;
+  document.getElementById("btn-spray").onclick = triggerSprayPaint;
+}
+
+// Page bootstrap
+document.addEventListener("DOMContentLoaded", () => {
+  initLocationAndSettingsUI();
+  initHobbyBench();
+  load();
+});
+
+// Auto-refresh forecast when bringing PWA back to foreground
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) load();
+});
+</script>
+</body>
+</html>

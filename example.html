@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CoatCheck* Showcase</title>
+
+<!-- Progressive Web App Tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CC* Showcase">
+<meta name="theme-color" content="#0c0814">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primer: #0c0814;
+    --panel: #140f22;
+    --ink: #f5edf7;
+    --faint: #988a9e;
+    --border: #281d3f;
+    --cutting-mat: rgba(244, 237, 244, 0.02);
+    
+    --good: #00f2fe;
+    --good-bg: rgba(0, 242, 254, 0.05);
+    --good-glow: rgba(0, 242, 254, 0.25);
+    
+    --meh: #bf86ff;
+    --meh-bg: rgba(191, 134, 255, 0.05);
+    --meh-glow: rgba(191, 134, 255, 0.2);
+    
+    --skip: #ff0055;
+    --skip-bg: rgba(255, 0, 85, 0.05);
+    --skip-glow: rgba(255, 0, 85, 0.2);
+    
+    --hot: #ff9f43;
+    --cold: #00d9eb;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--border) var(--primer);
+  }
+  
+  body {
+    background-color: var(--primer);
+    color: var(--ink);
+    font-family: "DM Mono", ui-monospace, monospace;
+    padding: calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 30px);
+    max-width: 760px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background-image: 
+      linear-gradient(var(--cutting-mat) 1px, transparent 1px),
+      linear-gradient(90deg, var(--cutting-mat) 1px, transparent 1px),
+      radial-gradient(circle at 47% 20%, rgba(85, 32, 111, 0.22), transparent 40%),
+      radial-gradient(circle at 85% 75%, rgba(0, 242, 254, 0.06), transparent 28%);
+    background-size: 24px 24px, 24px 24px, auto, auto;
+    overflow-x: hidden;
+  }
+  
+  .label {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 25px;
+  }
+  
+  header h1 {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-weight: 400;
+    font-size: 26px;
+    letter-spacing: -.03em;
+  }
+  
+  header h1 span {
+    color: var(--good);
+  }
+  
+  header h1 .asterisk {
+    display: inline-block;
+    color: var(--meh);
+    transition: transform 0.6s ease;
+  }
+  
+  header h1:hover .asterisk {
+    transform: rotate(180deg);
+  }
+  
+  .btn {
+    background: #f5edf7;
+    color: var(--primer);
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 237, 247, 0.2);
+  }
+  
+  .btn:active {
+    transform: translateY(0);
+  }
+  
+  .btn.secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  
+  .btn.secondary:hover {
+    background: rgba(245, 237, 247, 0.05);
+    border-color: var(--ink);
+    box-shadow: none;
+  }
+  
+  /* Feature presentation header badge */
+  .demo-hero {
+    background: linear-gradient(135deg, rgba(191, 134, 255, 0.1), rgba(0, 242, 254, 0.1));
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .demo-hero h2 {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 8px;
+  }
+  
+  .demo-hero p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--faint);
+  }
+  
+  /* Sprite Gallery */
+  .gallery-section {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  
+  .gallery-title {
+    font-size: 9px;
+    color: var(--faint);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+  }
+  
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  
+  @media (min-width: 540px) {
+    .gallery-grid {
+      grid-template-columns: repeat(7, 1fr);
+    }
+  }
+  
+  .gallery-pod {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .gallery-pod:hover {
+    transform: translateY(-2px);
+    border-color: var(--good);
+    box-shadow: 0 0 12px var(--good-glow);
+  }
+  
+  .gallery-pod span {
+    font-size: 8px;
+    color: var(--faint);
+    margin-top: 6px;
+    text-align: center;
+  }
+  
+  .gallery-pod:hover span {
+    color: var(--ink);
+  }
+  
+  /* Calibration Settings Panel always visible here to allow easy tweaking */
+  .calibration-box {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .calibration-box h3 {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-weight: 400;
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  
+  .setting-item {
+    margin-bottom: 16px;
+  }
+  
+  .setting-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  
+  .setting-label-row span {
+    font-weight: bold;
+    color: var(--good);
+  }
+  
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    outline: none;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--good);
+    cursor: pointer;
+    box-shadow: 0 0 6px var(--good);
+  }
+  
+  /* Weather Days Section */
+  .chip {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .chip:hover {
+    transform: translateY(-2px);
+  }
+  
+  .chip.good { border-color: rgba(0, 242, 254, 0.2); }
+  .chip.meh { border-color: rgba(191, 134, 255, 0.25); }
+  .chip.skip { border-color: rgba(255, 0, 85, 0.2); }
+  
+  .chip.good:hover {
+    border-color: var(--good);
+    box-shadow: 0 0 22px var(--good-glow);
+  }
+  
+  .chip.meh:hover {
+    border-color: var(--meh);
+    box-shadow: 0 0 22px var(--meh-glow);
+  }
+  
+  .chip.skip:hover {
+    border-color: var(--skip);
+    box-shadow: 0 0 22px var(--skip-glow);
+  }
+  
+  .chip.expanded.good { border-color: var(--good); box-shadow: 0 0 14px var(--good-glow); }
+  .chip.expanded.meh { border-color: var(--meh); box-shadow: 0 0 14px var(--meh-glow); }
+  .chip.expanded.skip { border-color: var(--skip); box-shadow: 0 0 14px var(--skip-glow); }
+  
+  .swatch {
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: linear-gradient(105deg, rgba(255, 255, 255, 0.035), transparent);
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .swatch .name {
+    font-family: "DM Serif Display", Georgia, serif;
+    font-weight: 400;
+    font-size: 24px;
+    letter-spacing: -.02em;
+    margin-top: 4px;
+  }
+  
+  .good .swatch .name { color: var(--good); }
+  .meh .swatch .name { color: var(--meh); }
+  .skip .swatch .name { color: var(--skip); }
+  
+  .swatch .code {
+    font-size: 9px;
+    opacity: .65;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .chip .body {
+    padding: 14px 20px 18px;
+  }
+  
+  .dayline {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+  
+  .dayline .day {
+    font-family: Georgia, serif;
+    font-size: 17px;
+  }
+  
+  .dayline .day .date-sub {
+    font-family: "DM Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--faint);
+    margin-left: 6px;
+  }
+  
+  .dayline .temps {
+    font-variant-numeric: tabular-nums;
+    font-size: 18px;
+  }
+  
+  .dayline .temps b {
+    font-weight: 700;
+  }
+  
+  .dayline .temps .temp-sep {
+    color: var(--border);
+    margin: 0 2px;
+  }
+  
+  .dayline .temps .low {
+    color: var(--faint);
+  }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  
+  .stat {
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+  
+  .stat .k {
+    font-size: 9px;
+    color: var(--faint);
+    margin-bottom: 4px;
+  }
+  
+  .stat .v {
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+  
+  .stat .v small {
+    font-weight: 400;
+    color: var(--faint);
+    font-size: 11px;
+    margin-left: 2px;
+  }
+  
+  .good .verdict-text { color: var(--good); }
+  .meh .verdict-text { color: var(--meh); }
+  .skip .verdict-text { color: var(--skip); }
+  
+  /* Multi-color Pixel Art SVG Sprites */
+  .sprite-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.15);
+    border: 1px solid var(--border);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .chip:hover .sprite-container {
+    transform: scale(1.1) rotate(2deg);
+  }
+  
+  .pixel-sprite {
+    display: block;
+    width: 48px;
+    height: 48px;
+    filter: drop-shadow(0 0 6px var(--glow-col));
+  }
+  
+  .sprite-container.good .pixel-sprite { --glow-col: rgba(0, 242, 254, 0.25); }
+  .sprite-container.meh .pixel-sprite { --glow-col: rgba(191, 134, 255, 0.2); }
+  .sprite-container.skip .pixel-sprite { --glow-col: rgba(255, 0, 85, 0.2); }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  .chip:hover .pixel-sprite {
+    animation: bounce 0.6s infinite ease-in-out;
+  }
+  
+  /* Hourly Expanded Panel styles */
+  .hourly-panel {
+    border-top: 1px solid var(--border);
+    padding: 18px 20px 20px;
+    background: rgba(0, 0, 0, 0.15);
+    animation: slideDown .25s ease both;
+  }
+  
+  .hourly-panel.hidden {
+    display: none;
+  }
+  
+  .hourly-header {
+    font-size: 9px;
+    color: var(--faint);
+    margin-bottom: 12px;
+  }
+  
+  .hourly-timeline {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 4px;
+    margin-bottom: 15px;
+  }
+  
+  .hour-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 2px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .hour-block:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .hour-block.active {
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+  }
+  
+  .hour-block.good.active { border-color: var(--good); box-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
+  .hour-block.meh.active { border-color: var(--meh); box-shadow: 0 0 8px rgba(191, 134, 255, 0.4); }
+  .hour-block.skip.active { border-color: var(--skip); box-shadow: 0 0 8px rgba(255, 0, 85, 0.4); }
+  
+  .hour-num {
+    font-size: 8px;
+    color: var(--faint);
+    margin-bottom: 6px;
+  }
+  
+  .hour-block.active .hour-num {
+    color: var(--ink);
+    font-weight: bold;
+  }
+  
+  .hour-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  
+  .hour-block.good .hour-dot { background: var(--good); box-shadow: 0 0 4px var(--good); }
+  .hour-block.meh .hour-dot { background: var(--meh); box-shadow: 0 0 4px var(--meh); }
+  .hour-block.skip .hour-dot { background: var(--skip); box-shadow: 0 0 4px var(--skip); }
+  
+  .hourly-inspection {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  
+  .inspect-time {
+    font-size: 9px;
+    color: var(--faint);
+    margin-bottom: 6px;
+  }
+  
+  .inspect-row {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .inspect-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .inspect-pill strong {
+    color: var(--ink);
+  }
+  
+  .advice-box {
+    border-left: 2px solid var(--border);
+    padding-left: 12px;
+    margin-top: 8px;
+  }
+  
+  .advice-box.good { border-color: var(--good); }
+  .advice-box.meh { border-color: var(--meh); }
+  .advice-box.skip { border-color: var(--skip); }
+  .advice-box.hot { border-color: var(--hot); }
+  .advice-box.cold { border-color: var(--cold); }
+  
+  .advice-title {
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .advice-box.good .advice-title { color: var(--good); }
+  .advice-box.meh .advice-title { color: var(--meh); }
+  .advice-box.skip .advice-title { color: var(--skip); }
+  .advice-box.hot .advice-title { color: var(--hot); }
+  .advice-box.cold .advice-title { color: var(--cold); }
+  
+  .advice-text {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--faint);
+  }
+  
+  /* Mini Painter's Station Bench widget */
+  .paint-station {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-top: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
+  
+  .station-header {
+    font-size: 9px;
+    color: var(--faint);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .station-body {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  @media (min-width: 580px) {
+    .station-body {
+      flex-direction: row;
+    }
+  }
+  
+  .spray-can-interactive {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-width: 140px;
+  }
+  
+  @keyframes extreme-shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-2px, -3px) rotate(-2deg); }
+    20% { transform: translate(-4px, 0px) rotate(2deg); }
+    30% { transform: translate(0px, 4px) rotate(-1deg); }
+    40% { transform: translate(2px, -1px) rotate(3deg); }
+    50% { transform: translate(-1px, 3px) rotate(-3deg); }
+    60% { transform: translate(-4px, 1px) rotate(1deg); }
+    70% { transform: translate(3px, 2px) rotate(-2deg); }
+    80% { transform: translate(-1px, -2px) rotate(2deg); }
+    90% { transform: translate(2px, 3px) rotate(-1deg); }
+    100% { transform: translate(1px, -2px) rotate(0deg); }
+  }
+  
+  .spray-can-interactive.shaking #can-sprite-holder {
+    animation: extreme-shake 0.1s infinite;
+  }
+  
+  .can-controls {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .wet-palette-tip {
+    flex: 1;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .bench-note-title {
+    font-size: 9px;
+    color: var(--meh);
+    margin-bottom: 6px;
+  }
+  
+  .wet-palette-tip p {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--faint);
+  }
+  
+  .splatter {
+    position: absolute;
+    border-radius: 1px;
+    background: var(--color);
+    pointer-events: none;
+    z-index: 9999;
+    animation: paint-fly 0.5s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
+  }
+  
+  @keyframes paint-fly {
+    0% {
+      transform: translate(0, 0) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--tx), var(--ty)) scale(0) rotate(180deg);
+      opacity: 0;
+    }
+  }
+  
+  footer {
+    margin-top: 35px;
+    text-align: center;
+    font-size: 10px;
+    color: var(--faint);
+    line-height: 1.8;
+  }
+  
+  #showcase-badge {
+    text-align: center;
+    background: var(--border);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    margin-bottom: 25px;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Coat<span>Check</span><span class="asterisk">*</span> <small class="label" style="font-size:12px; color:var(--faint); margin-left:6px;">Demo Deck</small></h1>
+  <a href="index.html" class="btn secondary">← Back to Live Skies</a>
+</header>
+
+<div style="text-align:center;">
+  <span id="showcase-badge" class="label">✨ Static Feature & Asset Showcase Playground</span>
+</div>
+
+<div class="demo-hero">
+  <h2>Tired of Gainesville's static summer?</h2>
+  <p>
+    I created this dedicated playground so you can explore and click on <strong>every weather warning and sprite asset side-by-side</strong>. 
+    Below, you'll see a gallery of all custom 16x16 multi-colored pixel sprites, active tolerance sliders, 
+    7 fully populated mock days representing every possible mini-painting climate scenario, and the fully functional shake-and-spray sound toy!
+  </p>
+</div>
+
+<!-- 1. The Sprite Gallery -->
+<section class="gallery-section">
+  <div class="gallery-title label">Sprite Gallery (Click to trigger bouncy sound rattle!)</div>
+  <div class="gallery-grid" id="sprite-gallery"></div>
+</section>
+
+<!-- 2. The Interactive Sliders -->
+<div class="calibration-box">
+  <h3>Interactive Calibration Desk</h3>
+  <p style="font-size:11px; color:var(--faint); margin-bottom:15px; line-height:1.5;">
+    Drag these sliders to adjust weather tolerances! The 7 mock cards below will <strong>instantly recalculate their verdicts, badges, and colors</strong> in real-time as you drag. Tweak maximum humidity down to 65% to see the marginal card flip!
+  </p>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Minimum Safe Temp</label>
+      <span><span id="val-tempMin">50</span>°F</span>
+    </div>
+    <input type="range" id="slider-tempMin" min="30" max="65" value="50">
+  </div>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Maximum Safe Temp</label>
+      <span><span id="val-tempMax">90</span>°F</span>
+    </div>
+    <input type="range" id="slider-tempMax" min="75" max="105" value="90">
+  </div>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Maximum Humidity</label>
+      <span><span id="val-rhMax">70</span>%</span>
+    </div>
+    <input type="range" id="slider-rhMax" min="50" max="90" value="70">
+  </div>
+  
+  <div class="setting-item">
+    <div class="setting-label-row">
+      <label class="label">Max Rain Probability</label>
+      <span><span id="val-rainMax">20</span>%</span>
+    </div>
+    <input type="range" id="slider-rainMax" min="0" max="45" value="20">
+  </div>
+  
+  <div style="text-align: right;">
+    <button id="btn-reset-settings" class="btn secondary" style="font-size:10px; padding:6px 10px;">Reset Sliders</button>
+  </div>
+</div>
+
+<div class="label" style="color:var(--faint); margin-bottom:12px;">7 Weather Scenarios to Inspect (Click any card to expand hourly details!)</div>
+
+<!-- 3. Mock Cards Container -->
+<div id="days"></div>
+
+<!-- 4. Interactive Hobby Station Widget -->
+<section class="paint-station" style="margin-top:35px;">
+  <div class="station-header label">Procedural Synthesis Workbench</div>
+  <div class="station-body">
+    <div class="spray-can-interactive" id="interactive-spray-can">
+      <div id="can-sprite-holder" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
+      <div class="can-controls">
+        <button id="btn-shake" class="btn primary">Shake Can 🫨</button>
+        <button id="btn-spray" class="btn secondary">Test Spray 💨</button>
+      </div>
+    </div>
+    <div class="wet-palette-tip">
+      <div class="bench-note-title label">Synthesizer Status</div>
+      <p id="bench-status-text">Your spray primer rattle can is resting on the workbench. Shaking mixes pigments; spraying blows dust out of the nozzle. Click to generate real sound wave forms!</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="label" style="font-size:10px; color:var(--good); margin-bottom:10px;">
+    CoatCheck* Software Studio (<a href="https://paperhurts.dev/" style="color:var(--good); text-decoration:none; border-bottom:1px dashed var(--good);" target="_blank" rel="noopener">paperhurts.dev*</a>)
+  </div>
+  <div style="font-size:11px; color:var(--faint);">Crafted to be much better, cuter, and more fun than ChatGPT.</div>
+</footer>
+
+<script>
+const LS = window.localStorage;
+
+// The 7 Pixel Art sprites we designed
+const PALETTE = {
+  '.': 'transparent',
+  'k': '#140f1f',
+  'w': '#ffffff',
+  's': '#7b8094',
+  'l': '#c2c6d6',
+  'y': '#ffcc00',
+  'o': '#e67e22',
+  'r': '#ff0055',
+  'p': '#9b59b6',
+  'b': '#00d9eb',
+  'g': '#2ecc71',
+  'c': '#ff7aa2',
+  'u': '#2980b9'
+};
+
+const SPRITES = {
+  perfect: [
+    "......kk........",
+    "....kkllkk.bb...",
+    "....kllllk.bwwb.",
+    "....kkkkkk..bb..",
+    "...kssssssk.....",
+    "..kssssssssk....",
+    ".kssgwwgsssk....",
+    ".ksgkkkkgssk....",
+    ".ksgkkkkgssk....",
+    ".ksgwwgwwgsk....",
+    ".ksgwwgwwgsk....",
+    ".ksgkkkkggsk....",
+    ".kssgggggssk....",
+    "..ksssssssk.....",
+    "...kkkkkkk......",
+    "................"
+  ],
+  good: [
+    ".....kkkk.......",
+    ".....kwwk.......",
+    "....kwwwwk......",
+    "....kkkkkk..kk..",
+    "...kssssssk.ksk.",
+    "..ksssssssskksk.",
+    ".kssppwwppskksk.",
+    ".ksppkkkppskkok.",
+    ".ksppkkkppskkok.",
+    ".ksppwwrwppskkk.",
+    ".ksppwwrwppskbb.",
+    ".kssppppppskbbb.",
+    ".kssssssssskbb..",
+    "..ksssssssk.k...",
+    "...kkkkkkk......",
+    "................"
+  ],
+  cloudy: [
+    "......kkkk......",
+    "....kkwwwwkk....",
+    "...kwwwwwwwwkk..",
+    "..kwwwwwwwwwwwwk",
+    ".kwwwkwwkwwkwwwk",
+    ".kwwkkkkkkkkwwwk",
+    ".kwwkwwkwwkwwwwk",
+    ".kwwkwwwwwkwwwwk",
+    "..kwwwwwwwwwwwwk",
+    "...kkkkkkkkkkkk.",
+    ".....koook......",
+    ".....ksssk......",
+    ".....ksssk......",
+    ".....kbbbk......",
+    "......kbbk......",
+    ".......kk......."
+  ],
+  humid: [
+    ".....kkkk.......",
+    ".....kwwk.......",
+    "....kwwwwk......",
+    "....kkkkkk......",
+    "...kssssssk.....",
+    "..kssssssssk.bb.",
+    ".kssyywwyysskbb.",
+    ".ksyykkkyysskbb.",
+    ".ksyykkkyyssk...",
+    ".ksyywwrwysk.bb.",
+    ".ksyywwwyysk.bb.",
+    ".kssyyyyyysk.b..",
+    ".kssssssssk.....",
+    "..ksssssssk.....",
+    "...kkkkkkk......",
+    "................"
+  ],
+  rainy: [
+    "....kkkkk.......",
+    "..kkwwwwwkk.....",
+    ".kwwwwwwwwwk....",
+    "kwwwwwwwwwwwk...",
+    ".kkkkkkkkkkk....",
+    "....b....b......",
+    "......b....b....",
+    "....kkkkkk......",
+    "...ksllsslks....",
+    "...kllllllks....",
+    "...klkllklks....",
+    "...kllllllks....",
+    "...ksllsslks....",
+    "....kssssk......",
+    ".....kkkk.......",
+    "................"
+  ],
+  cold: [
+    "....bbbbbbbb....",
+    "...bkkkkkkkkb...",
+    "..bkoooookooob..",
+    ".bkoooookoooobb.",
+    "bkoooookoooobbb.",
+    "bkkkkkkkkkkkbb..",
+    "bkssssssssskbb..",
+    "bkssssssssskb...",
+    "bkssssssssskb...",
+    "bkrrrrrrrrrkb...",
+    "bkrrrrrrrrrkb...",
+    "bkrrrrrrrrrkb...",
+    "..bkkkkkkkbb....",
+    "...bbbbbbbb.....",
+    "....bbbbbb......",
+    "................"
+  ],
+  hot: [
+    "....kkkkkk......",
+    "...kssssssk.....",
+    "..kskkkkkkssk...",
+    "..ksssssssssk...",
+    ".kssrrrrrrsssk..",
+    ".ksrkkkkkkrssk..",
+    "ksrkkkkkkkkrsk..",
+    "ksrkwwkkwwkrsk..",
+    "ksrkwwkkwwkrsk..",
+    "ksrkkkkkkkkrsk..",
+    "ksrkrrkkrrkrsk..",
+    ".ksrkkkkkkrssk..",
+    ".kssrrrrrrsssk..",
+    "..ksssssssssk...",
+    "...kkkkkkkkk....",
+    "................"
+  ]
+};
+
+// 7 Carefully curated weather scenarios representing extreme, marginal, and perfect conditions
+const MOCK_DAYS = [
+  {
+    title: "Perfect Spray Window",
+    sprite: "perfect",
+    day: "Tomorrow",
+    dateStr: "Aug 28",
+    hi: 74,
+    lo: 62,
+    rh: 45,
+    rain: 0,
+    hourly: [
+      { startTime: "08:00", temperature: 62, relativeHumidity: { value: 50 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "09:00", temperature: 65, relativeHumidity: { value: 48 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "10:00", temperature: 68, relativeHumidity: { value: 45 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "11:00", temperature: 71, relativeHumidity: { value: 42 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "12:00", temperature: 74, relativeHumidity: { value: 40 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "13:00", temperature: 74, relativeHumidity: { value: 40 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "14:00", temperature: 73, relativeHumidity: { value: 42 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "15:00", temperature: 72, relativeHumidity: { value: 44 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "16:00", temperature: 70, relativeHumidity: { value: 46 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "17:00", temperature: 67, relativeHumidity: { value: 48 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "18:00", temperature: 64, relativeHumidity: { value: 50 }, probabilityOfPrecipitation: { value: 0 } }
+    ]
+  },
+  {
+    title: "Pleasant Brush Day",
+    sprite: "good",
+    day: "Friday",
+    dateStr: "Aug 29",
+    hi: 64,
+    lo: 52,
+    rh: 52,
+    rain: 0,
+    hourly: [
+      { startTime: "08:00", temperature: 52, relativeHumidity: { value: 60 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "09:00", temperature: 55, relativeHumidity: { value: 58 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "10:00", temperature: 58, relativeHumidity: { value: 55 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "11:00", temperature: 61, relativeHumidity: { value: 53 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "12:00", temperature: 64, relativeHumidity: { value: 50 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "13:00", temperature: 64, relativeHumidity: { value: 50 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "14:00", temperature: 63, relativeHumidity: { value: 51 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "15:00", temperature: 62, relativeHumidity: { value: 53 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "16:00", temperature: 60, relativeHumidity: { value: 54 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "17:00", temperature: 57, relativeHumidity: { value: 56 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "18:00", temperature: 54, relativeHumidity: { value: 58 }, probabilityOfPrecipitation: { value: 0 } }
+    ]
+  },
+  {
+    title: "Overcast & Cloudy",
+    sprite: "cloudy",
+    day: "Saturday",
+    dateStr: "Aug 30",
+    hi: 68,
+    lo: 56,
+    rh: 66,
+    rain: 15,
+    hourly: [
+      { startTime: "08:00", temperature: 56, relativeHumidity: { value: 72 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "09:00", temperature: 59, relativeHumidity: { value: 70 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "10:00", temperature: 62, relativeHumidity: { value: 67 }, probabilityOfPrecipitation: { value: 15 } },
+      { startTime: "11:00", temperature: 65, relativeHumidity: { value: 65 }, probabilityOfPrecipitation: { value: 15 } },
+      { startTime: "12:00", temperature: 68, relativeHumidity: { value: 63 }, probabilityOfPrecipitation: { value: 15 } },
+      { startTime: "13:00", temperature: 67, relativeHumidity: { value: 64 }, probabilityOfPrecipitation: { value: 15 } },
+      { startTime: "14:00", temperature: 66, relativeHumidity: { value: 66 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "15:00", temperature: 64, relativeHumidity: { value: 68 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "16:00", temperature: 62, relativeHumidity: { value: 70 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "17:00", temperature: 60, relativeHumidity: { value: 71 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "18:00", temperature: 58, relativeHumidity: { value: 73 }, probabilityOfPrecipitation: { value: 5 } }
+    ]
+  },
+  {
+    title: "Humid / Frosting Threat",
+    sprite: "humid",
+    day: "Sunday",
+    dateStr: "Aug 31",
+    hi: 78,
+    lo: 68,
+    rh: 83,
+    rain: 10,
+    hourly: [
+      { startTime: "08:00", temperature: 68, relativeHumidity: { value: 91 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "09:00", temperature: 70, relativeHumidity: { value: 87 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "10:00", temperature: 72, relativeHumidity: { value: 84 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "11:00", temperature: 74, relativeHumidity: { value: 81 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "12:00", temperature: 78, relativeHumidity: { value: 78 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "13:00", temperature: 77, relativeHumidity: { value: 80 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "14:00", temperature: 76, relativeHumidity: { value: 82 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "15:00", temperature: 75, relativeHumidity: { value: 84 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "16:00", temperature: 73, relativeHumidity: { value: 86 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "17:00", temperature: 71, relativeHumidity: { value: 88 }, probabilityOfPrecipitation: { value: 10 } },
+      { startTime: "18:00", temperature: 69, relativeHumidity: { value: 90 }, probabilityOfPrecipitation: { value: 10 } }
+    ]
+  },
+  {
+    title: "Summer Thunderstorm",
+    sprite: "rainy",
+    day: "Monday",
+    dateStr: "Sep 1",
+    hi: 71,
+    lo: 63,
+    rh: 78,
+    rain: 85,
+    hourly: [
+      { startTime: "08:00", temperature: 63, relativeHumidity: { value: 82 }, probabilityOfPrecipitation: { value: 15 } },
+      { startTime: "09:00", temperature: 65, relativeHumidity: { value: 80 }, probabilityOfPrecipitation: { value: 30 } },
+      { startTime: "10:00", temperature: 67, relativeHumidity: { value: 78 }, probabilityOfPrecipitation: { value: 65 } },
+      { startTime: "11:00", temperature: 69, relativeHumidity: { value: 75 }, probabilityOfPrecipitation: { value: 85 } },
+      { startTime: "12:00", temperature: 71, relativeHumidity: { value: 72 }, probabilityOfPrecipitation: { value: 80 } },
+      { startTime: "13:00", temperature: 70, relativeHumidity: { value: 74 }, probabilityOfPrecipitation: { value: 75 } },
+      { startTime: "14:00", temperature: 68, relativeHumidity: { value: 77 }, probabilityOfPrecipitation: { value: 60 } },
+      { startTime: "15:00", temperature: 67, relativeHumidity: { value: 79 }, probabilityOfPrecipitation: { value: 45 } },
+      { startTime: "16:00", temperature: 66, relativeHumidity: { value: 81 }, probabilityOfPrecipitation: { value: 30 } },
+      { startTime: "17:00", temperature: 65, relativeHumidity: { value: 83 }, probabilityOfPrecipitation: { value: 15 } },
+      { startTime: "18:00", temperature: 64, relativeHumidity: { value: 85 }, probabilityOfPrecipitation: { value: 15 } }
+    ]
+  },
+  {
+    title: "Bitter Winter Morning",
+    sprite: "cold",
+    day: "Tuesday",
+    dateStr: "Sep 2",
+    hi: 52,
+    lo: 36,
+    rh: 44,
+    rain: 0,
+    hourly: [
+      { startTime: "08:00", temperature: 36, relativeHumidity: { value: 50 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "09:00", temperature: 39, relativeHumidity: { value: 48 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "10:00", temperature: 42, relativeHumidity: { value: 46 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "11:00", temperature: 46, relativeHumidity: { value: 44 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "12:00", temperature: 50, relativeHumidity: { value: 42 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "13:00", temperature: 52, relativeHumidity: { value: 40 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "14:00", temperature: 51, relativeHumidity: { value: 41 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "15:00", temperature: 49, relativeHumidity: { value: 43 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "16:00", temperature: 46, relativeHumidity: { value: 45 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "17:00", temperature: 42, relativeHumidity: { value: 48 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "18:00", temperature: 38, relativeHumidity: { value: 50 }, probabilityOfPrecipitation: { value: 0 } }
+    ]
+  },
+  {
+    title: "Extreme Summer Heat",
+    sprite: "hot",
+    day: "Wednesday",
+    dateStr: "Sep 3",
+    hi: 98,
+    lo: 76,
+    rh: 52,
+    rain: 5,
+    hourly: [
+      { startTime: "08:00", temperature: 78, relativeHumidity: { value: 65 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "09:00", temperature: 83, relativeHumidity: { value: 60 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "10:00", temperature: 88, relativeHumidity: { value: 57 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "11:00", temperature: 92, relativeHumidity: { value: 54 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "12:00", temperature: 95, relativeHumidity: { value: 50 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "13:00", temperature: 98, relativeHumidity: { value: 48 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "14:00", temperature: 97, relativeHumidity: { value: 49 }, probabilityOfPrecipitation: { value: 0 } },
+      { startTime: "15:00", temperature: 95, relativeHumidity: { value: 51 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "16:00", temperature: 91, relativeHumidity: { value: 53 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "17:00", temperature: 86, relativeHumidity: { value: 56 }, probabilityOfPrecipitation: { value: 5 } },
+      { startTime: "18:00", temperature: 81, relativeHumidity: { value: 59 }, probabilityOfPrecipitation: { value: 5 } }
+    ]
+  }
+];
+
+const NAMES = {
+  good: ["Perfect Prime", "Clean Basecoat", "Glass Finish", "Crisp Edge", "Brush Ready", "Golden Cure"],
+  meh:  ["Tacky Finish Warning", "Proceed with Caution", "High Dry-Tip Hazard", "Thin Coats Only", "Slight Moisture", "Watch the Horizon"],
+  skip: ["Frosting Danger", "Wash Out!", "Primer Orange-Peel", "Bench Painting Only", "Close the Lid", "Wet Paint Clogging"]
+};
+
+// SVG path generator for pixel-art
+function makeSpriteSVG(grid, size = 48) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  let pathsByColor = {};
+  
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const char = grid[r][c];
+      if (char !== '.' && char !== ' ' && PALETTE[char]) {
+        const color = PALETTE[char];
+        if (!pathsByColor[color]) {
+          pathsByColor[color] = [];
+        }
+        pathsByColor[color].push(`M${c},${r}h1v1h-1z`);
+      }
+    }
+  }
+  
+  let pathsHTML = '';
+  for (const [color, paths] of Object.entries(pathsByColor)) {
+    pathsHTML += `<path d="${paths.join(' ')}" fill="${color}" shape-rendering="crispEdges" />`;
+  }
+  
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${cols} ${rows}" width="${size}" height="${size}" class="pixel-sprite">
+    ${pathsHTML}
+  </svg>`;
+}
+
+// User settings thresholds
+function getSettings() {
+  return {
+    tempMin: parseFloat(LS.getItem("cc_demo_temp_min") || "50"),
+    tempMax: parseFloat(LS.getItem("cc_demo_temp_max") || "90"),
+    rhMax: parseFloat(LS.getItem("cc_demo_rh_max") || "70"),
+    rainMax: parseFloat(LS.getItem("cc_demo_rain_max") || "20"),
+    
+    // Margins
+    tempMinMeh: parseFloat(LS.getItem("cc_demo_temp_min") || "50") - 5,
+    tempMaxMeh: parseFloat(LS.getItem("cc_demo_temp_max") || "90") + 5,
+    rhMaxMeh: parseFloat(LS.getItem("cc_demo_rh_max") || "70") + 10,
+    rainMaxMeh: parseFloat(LS.getItem("cc_demo_rain_max") || "20") + 20
+  };
+}
+
+// Verdict calculation
+function verdict(d) {
+  const settings = getSettings();
+  let idealHours = 0;
+  let acceptableHours = 0;
+  
+  for (const p of d.hourly) {
+    const t = p.temperature;
+    const rh = p.relativeHumidity.value;
+    const rain = p.probabilityOfPrecipitation.value;
+    
+    const isTempIdeal = t >= settings.tempMin && t <= settings.tempMax;
+    const isRhIdeal = rh >= 40 && rh <= 60;
+    const isRainIdeal = rain <= settings.rainMax;
+    
+    if (isTempIdeal && isRhIdeal && isRainIdeal) {
+      idealHours++;
+    } else {
+      const isTempMeh = t >= settings.tempMinMeh && t <= settings.tempMaxMeh;
+      const isRhMeh = rh <= settings.rhMax;
+      const isRainMeh = rain <= settings.rainMaxMeh;
+      
+      if (isTempMeh && isRhMeh && isRainMeh) {
+        acceptableHours++;
+      }
+    }
+  }
+  
+  if (idealHours >= 1) return "good";
+  if (acceptableHours >= 2) return "meh";
+  return "skip";
+}
+
+function calculatePeriodVerdict(t, rh, rain) {
+  const settings = getSettings();
+  
+  // Ideal hourly window: 40-60% relative humidity
+  const isTempIdeal = t >= settings.tempMin && t <= settings.tempMax;
+  const isRhIdeal = rh >= 40 && rh <= 60;
+  const isRainIdeal = rain <= settings.rainMax;
+
+  if (isTempIdeal && isRhIdeal && isRainIdeal) {
+    return "good";
+  }
+
+  // Cautious hourly window
+  const isTempMeh = t >= settings.tempMinMeh && t <= settings.tempMaxMeh;
+  const isRhMeh = rh <= settings.rhMax;
+  const isRainMeh = rain <= settings.rainMaxMeh;
+
+  if (isTempMeh && isRhMeh && isRainMeh) {
+    return "meh";
+  }
+
+  return "skip";
+}
+
+// Weather advice
+function getPainterAdvice(t, rh, rain) {
+  const settings = getSettings();
+  
+  if (rain > settings.rainMaxMeh) {
+    return {
+      title: "🌧️ RAIN OUT!",
+      text: "Precipitation risks are high! Rain and moisture will completely wash out acrylic paint and ruin curing. Paint strictly indoors with standard brushwork today.",
+      type: "skip"
+    };
+  }
+  if (rh > settings.rhMaxMeh) {
+    return {
+      title: "🌫️ FROSTING ALERT",
+      text: "Extreme humidity! Aerosol spray cans and clear varnishes will trap microscopic water droplets, curing with a cloudy white 'frosting' coat. Stay far away from rattle cans!",
+      type: "skip"
+    };
+  }
+  if (t > settings.tempMax) {
+    return {
+      title: "🥵 DRY-TIP WARNING",
+      text: "It is too hot! Acrylic paint will evaporate on your bristles before they touch the miniature, clogging detail. Use a wet palette, thin with drying retarder, or stay in A/C.",
+      type: "hot"
+    };
+  }
+  if (t < settings.tempMin) {
+    return {
+      title: "🥶 SPUTTER HAZARD",
+      text: "Chilly air! Aerosol propellants won't gasify evenly, spraying paint in thick drops (orange-peel effect). Warm your spray cans inside warm water before spraying!",
+      type: "cold"
+    };
+  }
+  if (rh > settings.rhMax) {
+    return {
+      title: "⏳ TACKY CURING",
+      text: "Sticky humidity. Paint primer will take double the time to dry and may remain tacky. Give models plenty of resting time before handling or applying washes.",
+      type: "meh"
+    };
+  }
+  if (t >= 60 && t <= 82 && rh >= 35 && rh <= 62 && rain <= 10) {
+    return {
+      title: "✨ THE GOLDEN RATIO",
+      text: "Flawless painting atmosphere! Primers will atomize perfectly smooth, varnishes will cure 100% crystal-clear, and paints will flow with master-level glide. Spray today!",
+      type: "good"
+    };
+  }
+  return {
+    title: "👍 GOOD TO PAINT",
+    text: "Weather is clean and stable. Priming, airbrushing, and basecoating will perform very nicely. Do a tiny test spray on a sprue just to calibrate your distance!",
+    type: "good"
+  };
+}
+
+// Setup the sprite gallery
+function buildSpriteGallery() {
+  const container = document.getElementById("sprite-gallery");
+  container.innerHTML = Object.keys(SPRITES).map(key => {
+    return `
+      <div class="gallery-pod" onclick="playSpriteBoop('${key}')">
+        ${makeSpriteSVG(SPRITES[key], 42)}
+        <span>${key}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+// Render mockup weather cards
+function renderMockups() {
+  const container = document.getElementById("days");
+  
+  container.innerHTML = MOCK_DAYS.map((d, i) => {
+    const dayVerdict = verdict(d);
+    const name = NAMES[dayVerdict][i % NAMES[dayVerdict].length];
+    
+    return `
+      <div class="chip ${dayVerdict}" data-index="${i}" onclick="toggleHourly(${i})">
+        <div class="swatch">
+          <div style="flex:1; padding-right:12px;">
+            <div class="code label">FIELD LOG · CC-${String(d.rh).padStart(2,"0")}${String(d.rain).padStart(2,"0")}</div>
+            <div class="name">${name}</div>
+          </div>
+          <div class="sprite-container ${dayVerdict}" role="img" aria-label="${d.sprite} sprite">
+            ${makeSpriteSVG(SPRITES[d.sprite], 48)}
+          </div>
+        </div>
+        <div class="body">
+          <div class="dayline">
+            <div class="day"><strong>${d.day}</strong><span class="date-sub">${d.dateStr} (${d.title})</span></div>
+            <div class="temps"><b>${d.hi}°</b><span class="temp-sep">/</span><span class="low">${d.lo}°</span></div>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="k label">Humidity</div>
+              <div class="v">${d.rh}<small>% avg</small></div>
+            </div>
+            <div class="stat">
+              <div class="k label">Rain Probability</div>
+              <div class="v">${d.rain}<small>% max</small></div>
+            </div>
+            <div class="stat">
+              <div class="k label">Hobby Verdict</div>
+              <div class="v verdict-text">${{good:"Paint Day", meh:"Careful", skip:"Bench Day"}[dayVerdict]}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Hourly Timeline details -->
+        <div class="hourly-panel hidden" id="hourly-${i}" onclick="event.stopPropagation()">
+          <div class="hourly-header label">Hourly Painting Suitability (8:00 AM – 6:00 PM)</div>
+          <div class="hourly-timeline">
+            ${d.hourly.map((hPeriod, hpIndex) => {
+              const displayHour = hPeriod.startTime;
+              const hVerdict = calculatePeriodVerdict(hPeriod.temperature, hPeriod.relativeHumidity.value, hPeriod.probabilityOfPrecipitation.value);
+              return `
+                <div class="hour-block ${hVerdict}" 
+                     data-day="${i}" 
+                     data-hour="${hpIndex}" 
+                     onclick="selectHour(${i}, ${hpIndex})">
+                  <span class="hour-num">${displayHour}</span>
+                  <span class="hour-dot"></span>
+                </div>
+              `;
+            }).join("")}
+          </div>
+          <div class="hourly-inspection" id="inspect-${i}"></div>
+        </div>
+      </div>
+    `;
+  }).join("");
+  
+  MOCK_DAYS.forEach((d, i) => {
+    selectHour(i, 0, false);
+  });
+}
+
+function selectHour(dayIndex, hourIndex, updateDOM = true) {
+  const d = MOCK_DAYS[dayIndex];
+  if (!d) return;
+  const hPeriod = d.hourly[hourIndex];
+  if (!hPeriod) return;
+  
+  const temp = hPeriod.temperature;
+  const rh = hPeriod.relativeHumidity.value;
+  const rain = hPeriod.probabilityOfPrecipitation.value;
+  
+  const advice = getPainterAdvice(temp, rh, rain);
+  
+  const html = `
+    <div class="inspection-stats">
+      <div class="inspect-time label">${hPeriod.startTime} Forecast Details</div>
+      <div class="inspect-row">
+        <span class="inspect-pill">Temp: <strong>${temp}°F</strong></span>
+        <span class="inspect-pill">Humidity: <strong>${rh}%</strong></span>
+        <span class="inspect-pill">Rain: <strong>${rain}%</strong></span>
+      </div>
+    </div>
+    <div class="advice-box ${advice.type}">
+      <div class="advice-title label">${advice.title}</div>
+      <p class="advice-text">${advice.text}</p>
+    </div>
+  `;
+  
+  if (updateDOM) {
+    const el = document.getElementById(`inspect-${dayIndex}`);
+    if (el) {
+      el.innerHTML = html;
+      
+      const blocks = document.querySelectorAll(`#hourly-${dayIndex} .hour-block`);
+      blocks.forEach((b, idx) => {
+        if (idx === hourIndex) {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+    }
+  } else {
+    return html;
+  }
+}
+
+function toggleHourly(index) {
+  const panel = document.getElementById(`hourly-${index}`);
+  const card = document.querySelector(`.chip[data-index="${index}"]`);
+  if (!panel) return;
+  
+  const isHidden = panel.classList.contains("hidden");
+  
+  document.querySelectorAll(".hourly-panel").forEach((p, idx) => {
+    if (idx !== index) {
+      p.classList.add("hidden");
+      const c = document.querySelector(`.chip[data-index="${idx}"]`);
+      if (c) c.classList.remove("expanded");
+    }
+  });
+  
+  if (isHidden) {
+    panel.classList.remove("hidden");
+    card.classList.add("expanded");
+    selectHour(index, 0);
+  } else {
+    panel.classList.add("hidden");
+    card.classList.remove("expanded");
+  }
+}
+
+// Synthesizer Web Audio API
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playRattleSound(duration = 0.08, pitch = 850) {
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  const filter = audioCtx.createBiquadFilter();
+  
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(pitch, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(pitch / 4, audioCtx.currentTime + duration);
+  
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(pitch * 1.6, audioCtx.currentTime);
+  filter.Q.setValueAtTime(12, audioCtx.currentTime);
+  
+  gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(audioCtx.destination);
+  
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration + 0.01);
+}
+
+function playSpraySound() {
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const duration = 0.8;
+  const bufferSize = audioCtx.sampleRate * duration;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+  
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.setValueAtTime(2000, audioCtx.currentTime);
+  
+  const filter2 = audioCtx.createBiquadFilter();
+  filter2.type = 'bandpass';
+  filter2.frequency.setValueAtTime(4500, audioCtx.currentTime);
+  filter2.Q.setValueAtTime(1.2, audioCtx.currentTime);
+  
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.0, audioCtx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.14, audioCtx.currentTime + 0.08);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration - 0.05);
+  
+  source.connect(filter);
+  filter.connect(filter2);
+  filter2.connect(gain);
+  gain.connect(audioCtx.destination);
+  
+  source.start();
+}
+
+// Bouncy fun sound whenever a sprite gallery element is clicked!
+function playSpriteBoop(spriteKey) {
+  const pitches = {
+    perfect: 900,
+    good: 800,
+    cloudy: 700,
+    humid: 600,
+    rainy: 500,
+    cold: 1000,
+    hot: 400
+  };
+  playRattleSound(0.12, pitches[spriteKey] || 800);
+  
+  // Highlight card matching this sprite momentarily
+  const index = MOCK_DAYS.findIndex(d => d.sprite === spriteKey);
+  if (index !== -1) {
+    const card = document.querySelector(`.chip[data-index="${index}"]`);
+    if (card) {
+      card.style.transform = "scale(1.03) rotate(1deg)";
+      setTimeout(() => { card.style.transform = ""; }, 300);
+    }
+  }
+}
+
+let shakeInterval = null;
+function startShakingEffect() {
+  if (shakeInterval) return;
+  
+  const container = document.getElementById("interactive-spray-can");
+  container.classList.add("shaking");
+  
+  document.getElementById("bench-status-text").textContent = "🫨 CLACK-CLACK-CLACK! Shaking the spray primer can at hyper-speed! Mixing heavy pigment sediment...";
+  
+  shakeInterval = setInterval(() => {
+    playRattleSound(0.09, 880);
+    setTimeout(() => {
+      playRattleSound(0.06, 740);
+    }, 55 + Math.random() * 30);
+  }, 160);
+  
+  setTimeout(() => {
+    stopShakingEffect();
+  }, 1500);
+}
+
+function stopShakingEffect() {
+  if (shakeInterval) {
+    clearInterval(shakeInterval);
+    shakeInterval = null;
+  }
+  const container = document.getElementById("interactive-spray-can");
+  if (container) container.classList.remove("shaking");
+  document.getElementById("bench-status-text").textContent = "✨ Can is perfectly shaken! Aerosol paint particles are 100% mixed. Press 'Test Spray' to blow the nozzle out!";
+}
+
+function triggerSprayPaint(event) {
+  playSpraySound();
+  
+  const descriptions = [
+    "💨 Pssssshhh! Clean atomized spray mist. Perfect primer coat flatness!",
+    "💨 Pssssshhh! Nozzle clear! Air pressure looks very healthy.",
+    "💨 Pssssshhh! Spray looks super flat, zero clumps or orange-peel sputters.",
+    "💨 Pssssshhh! Test pattern is perfectly even. Ready for tiny miniatures!"
+  ];
+  document.getElementById("bench-status-text").textContent = descriptions[Math.floor(Math.random() * descriptions.length)];
+  
+  const btn = document.getElementById("btn-spray");
+  const rect = btn.getBoundingClientRect();
+  const startX = rect.left + rect.width / 2 + window.scrollX;
+  const startY = rect.top + window.scrollY;
+  
+  const miniatureColors = [
+    "#00f2fe", "#bf86ff", "#ff0055", "#2ecc71", "#ff9f43", "#ffcc00", "#ff7aa2", "#00a8ff"
+  ];
+  
+  for (let i = 0; i < 16; i++) {
+    const el = document.createElement("div");
+    el.className = "splatter";
+    
+    const color = miniatureColors[Math.floor(Math.random() * miniatureColors.length)];
+    el.style.setProperty("--color", color);
+    
+    el.style.left = `${startX}px`;
+    el.style.top = `${startY}px`;
+    
+    const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.9;
+    const speed = 55 + Math.random() * 85;
+    const tx = Math.cos(angle) * speed;
+    const ty = Math.sin(angle) * speed;
+    
+    el.style.setProperty("--tx", `${tx}px`);
+    el.style.setProperty("--ty", `${ty}px`);
+    
+    const dSize = 4 + Math.floor(Math.random() * 8);
+    el.style.width = `${dSize}px`;
+    el.style.height = `${dSize}px`;
+    
+    document.body.appendChild(el);
+    setTimeout(() => { el.remove(); }, 500);
+  }
+}
+
+function initCalibrationDesk() {
+  const sliders = [
+    { key: "cc_demo_temp_min", id: "tempMin", def: "50" },
+    { key: "cc_demo_temp_max", id: "tempMax", def: "90" },
+    { key: "cc_demo_rh_max", id: "rhMax", def: "70" },
+    { key: "cc_demo_rain_max", id: "rainMax", def: "20" }
+  ];
+  
+  sliders.forEach(s => {
+    const val = LS.getItem(s.key) || s.def;
+    LS.setItem(s.key, val);
+    
+    const sliderEl = document.getElementById(`slider-${s.id}`);
+    const valEl = document.getElementById(`val-${s.id}`);
+    
+    if (sliderEl && valEl) {
+      sliderEl.value = val;
+      valEl.textContent = val;
+      
+      sliderEl.oninput = (e) => {
+        valEl.textContent = e.target.value;
+        LS.setItem(s.key, e.target.value);
+        // Instant Live Recalculation over all mock cards!
+        renderMockups();
+      };
+    }
+  });
+  
+  document.getElementById("btn-reset-settings").onclick = () => {
+    sliders.forEach(s => {
+      LS.setItem(s.key, s.def);
+      const sliderEl = document.getElementById(`slider-${s.id}`);
+      const valEl = document.getElementById(`val-${s.id}`);
+      if (sliderEl && valEl) {
+        sliderEl.value = s.def;
+        valEl.textContent = s.def;
+      }
+    });
+    renderMockups();
+  };
+}
+
+// Page bootstrap
+document.addEventListener("DOMContentLoaded", () => {
+  buildSpriteGallery();
+  initCalibrationDesk();
+  renderMockups();
+  
+  // Setup rattle can bench
+  document.getElementById("can-sprite-holder").innerHTML = makeSpriteSVG(SPRITES.perfect, 80);
+  document.getElementById("btn-shake").onclick = startShakingEffect;
+  document.getElementById("btn-spray").onclick = triggerSprayPaint;
+});
+</script>
+</body>
+</html>
