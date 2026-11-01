@@ -47,6 +47,14 @@ Resting on the workshop bench is an interactive 3D-feeling rattle can:
 
 ---
 
+## ♡ Pick a painting companion
+
+Use **♡ Theme** on the live forecast or demo to choose **Pocket Paint Pals** (the original pixel sprites) or **Sister Sprinkles** (the completed illustrated sisters). Your choice is remembered in this browser and shared between the two pages. Theme changes keep your open day, selected hour, and forecast advice in place.
+
+The picker also introduces seven upcoming character sets, with the supplied reference art and cute names. They stay unavailable until their complete weather artwork is ready. See [THEMES.md](THEMES.md) for the roster and how to add a set.
+
+The [interactive sisters sample](sisters-preview.html) includes six illustrative weather days, character quotes, and the primer-can bench. It shares artwork with the live theme; it does not request live forecasts.
+
 ## 📂 File Directory
 
 *   `index.html` — The main weather application dashboard with live NWS API requests and browser Geolocation city-resolving.
@@ -54,6 +62,9 @@ Resting on the workshop bench is an interactive 3D-feeling rattle can:
 *   `manifest.webmanifest` — Standard web manifest declaring PWA standalone launch parameters and colors.
 *   `icon-180.png` — An adorable 180x180 PWA home screen icon featuring the custom "Perfect Spray Can" pixel mascot on our midnight primer background.
 *   `README.md` — This file!
+*   `themes.js` / `themes.css` — Shared companion picker, persistence, character mapping, and theme styling.
+*   `assets/themes/` — Completed sister artwork, provenance notes, and future character references.
+*   `THEMES.md` — Theme roster, asset contract, and verification instructions.
 
 ---
 

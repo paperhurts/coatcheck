@@ -793,6 +793,8 @@
     }
   }
 </style>
+<link rel="stylesheet" href="themes.css">
+<script defer src="themes.js"></script>
 </head>
 <body>
 
@@ -896,7 +898,7 @@
   <div class="station-header label">Interactive Hobbyist bench</div>
   <div class="station-body">
     <div class="spray-can-interactive" id="interactive-spray-can">
-      <div id="can-sprite-holder" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
+      <div id="can-sprite-holder" data-weather-sprite="bench" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
       <div class="can-controls">
         <button id="btn-shake" class="btn primary">Shake Can 🫨</button>
         <button id="btn-spray" class="btn secondary">Test Spray 💨</button>
@@ -1105,7 +1107,7 @@ function makeSpriteSVG(grid, size = 48) {
 
 function sprite(spriteName, verdict) {
   const grid = SPRITES[spriteName] || SPRITES.good;
-  return `<div class="sprite-container ${verdict}" role="img" aria-label="Cute weather sprite representing ${spriteName}">
+  return `<div class="sprite-container ${verdict}" data-weather-sprite="${spriteName}" role="img" aria-label="Cute weather sprite representing ${spriteName}">
     ${makeSpriteSVG(grid, 48)}
   </div>`;
 }

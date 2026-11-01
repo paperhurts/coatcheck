@@ -1,0 +1,18 @@
+CoatCheck sample artwork
+Generated with the built-in OpenAI image generation tool, using the approved mobile mockup as a character/style reference.
+
+Generation prompt:
+Create a transparent 1536x1024 sprite atlas with exactly six full-body chibi Sister of Battle illustrations in a rigid three-column, two-row equal-cell grid. Keep each character centered in its 512x512 cell with transparent padding. Consistent ivory white bob and bangs, rosy cheeks, expressive eyes, black power armor with gold fleur-de-lis, red tabard and chunky boots. Match the hand-painted sticker style of the reference. Top left: happily painting a tiny green miniature. Top middle: concerned, checking a cloudy varnish bottle with a sweat bead. Top right: sheltering tiny miniatures under a dark purple umbrella. Bottom left: shivering in a lavender scarf, cradling a paintbrush. Bottom middle: overheated, fanning herself with a palette. Bottom right: proudly shaking a primer can. No guns, UI, text, backgrounds or labels. Genuine transparent alpha.
+
+Final background-removal prompt (verbatim):
+Background removal only. Remove every background and all ambient backdrop glow from this 3-column 2-row character sprite atlas. Make the empty space genuinely transparent alpha. Keep ALL six characters, their props, raindrops, sun, snowflake, hearts and motion accents intact. Preserve the EXACT 1536x1024 dimensions, exact positions, proportions, equal 512x512 cell grid, character designs, colors and poses. Do not enlarge or shift any character. No new content. No UI. No text. The result must have transparent empty space between and around the six separate sticker characters, without gradient rectangles.
+
+Files:
+sisters-atlas.png - source character atlas, with alpha transparency.
+../../../sisters-preview.html - interactive sample sharing the theme assets.
+
+Sample forecasts are illustrative, not live. This is a fan concept and does not replace index.html.
+
+Heat artwork cleanup, built-in OpenAI image generation tool:
+Precise local cleanup of the tiny orange sun above the palette in the bottom-middle cell. Remove the ugly white/orange squiggly fragments below and to its right, restoring transparent empty space. Keep one clean round golden-orange sun with a smooth disc and six to eight simple evenly spaced straight rays. No steam, heat waves, white fragments or extra marks. Preserve the sister, props, pose, grid, dimensions and transparency. Change only the little sun and surrounding unwanted fragments.
+Saved as sisters-heat-atlas-v2.png. Only the heat character uses this edited atlas; all other characters retain the original atlas. The live app, demo, and interactive sample share these assets.
