@@ -1,0 +1,21 @@
+Blueberry Battle Buddies — Poppy
+
+Created with the built-in OpenAI image-generation tool, using the owner-supplied redhead reference at ../references/blueberry-battle-buddies.jpg. The existing Sister Sprinkles atlas was supplied only as a pose-layout reference.
+
+Final asset: blueberry-atlas.png
+Dimensions: 1536 x 1024, RGBA with transparent empty space.
+Layout: three columns, two rows, six equal 512 x 512 cells.
+Order: ready, humidity, rain, cold, heat, bench.
+Used by the live forecast and demo via the shared illustrated-theme renderer.
+
+Generation prompt:
+Use case: stylized-concept. Asset type: one finished six-pose character sprite atlas for the CoatCheck miniature-painting weather website. Image 1 is the character identity and drawing-style reference; Image 2 shows ONLY the required 3-column x 2-row pose arrangement. DO NOT copy the white-haired sister, dark armor, or decorative glitches from image 2. Draw the SAME adorable redheaded blue-armored woman from IMAGE 1 in all six cells. Keep the bright orange-red bob with sweeping side bangs, happy round face and rosy cheeks with tiny blue cheek markings, bulky cobalt Ultramarines-style power armor, white omega shoulder insignia, gold trim, winged skull chest ornament, little parchment seal, chunky armored boots. Cute feminine chibi face, large head and small body, expressive emotions; crisp pixel-edged game sticker illustration faithful to IMAGE 1. Consistent character identity, armor, scale, and head proportions across all six poses. No weapons; she is a miniature painting companion.
+OUTPUT: exact 1536x1024 landscape PNG with genuinely transparent alpha. EXACTLY six full-body illustrations, one in each equal 512x512 cell of a rigid 3x2 grid. Center each complete character within the inner 430x440px of its cell with at least 30px transparent padding on every edge. No hair, rays, droplets, umbrella, props or boots may cross a cell boundary. No borders, no cell fills, NO background gradient, NO ambient backdrop glow, no cast shadows between cells, no text or labels. Transparent empty space around each separate sticker.
+POSE ORDER, left to right:
+TOP LEFT READY: beaming with closed happy eyes, proudly holding a tiny green miniature and a fine paintbrush; small clean gold sparkle. Her reference thumbs-up energy, thrilled to paint.
+TOP CENTER HUMID: concerned little pout, inspecting a tiny cloudy varnish bottle with one large condensation bead; keep her armor and face identical.
+TOP RIGHT RAIN: seated under an oversized blue umbrella, sheltering her tiny green miniature. A few simple blue raindrops, worried but caring expression.
+BOTTOM LEFT COLD: shivering in a lavender-blue scarf over the SAME blue/gold armor, hugging a paintbrush. One small simple snowflake.
+BOTTOM CENTER HOT: red cheeks, one sweat bead, fanning herself with a miniature painter's palette; one SMALL SIMPLE ORANGE SUN above the palette with a circular disc and eight clean short straight rays. Absolutely NO squiggly heat-wave marks, white fragments, scribbles, or artifacts around the sun.
+BOTTOM RIGHT BENCH: winking with a big smile while shaking a small primer spray can; three small crisp gold motion ticks.
+Maintain readable silhouettes at 90px display size; all six must unmistakably be the SAME cute redhead from image 1. Each illustration entire within its own cell. No UI, no lettering, no extra characters.

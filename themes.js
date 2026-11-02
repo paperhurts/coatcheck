@@ -5,7 +5,7 @@
   const themes = [
     { id: 'pocket-paint-pals', name: 'Pocket Paint Pals', ready: true, description: 'The original tiny pixel painting friends.' },
     { id: 'sister-sprinkles', name: 'Sister Sprinkles', ready: true, artClass: 'sister-sprinkles', description: 'Little armored sisters, two thin coats, and a tiny crusade.' },
-    { id: 'blueberry-battle-buddies', name: 'Blueberry Battle Buddies', reference: 'blueberry-battle-buddies.jpg', description: 'Cheerful blue-armored painting pals.' },
+    { id: 'blueberry-battle-buddies', name: 'Blueberry Battle Buddies', ready: true, artClass: 'blueberry-battle-buddies', reference: 'blueberry-battle-buddies.jpg', description: 'Meet Poppy: a cheerful redhead in blue-and-gold armor, ready to protect your tiny coats.' },
     { id: 'greater-goodies', name: 'Greater Goodies', reference: 'greater-goodies.jpg', description: 'Blue little friends with a helpful hovering companion.' },
     { id: 'little-miss-heresy', name: 'Little Miss Heresy', reference: 'little-miss-heresy.jpg', description: 'A little mischief, a lot of tiny coats.' },
     { id: 'nibbly-nids', name: 'Nibbly Nids', reference: 'nibbly-nids.jpg', description: 'Small claws. Big painting appetite.' },

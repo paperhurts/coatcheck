@@ -1,12 +1,12 @@
 # Little painting companions
 
-The first illustrated set is **Sister Sprinkles**. Both `index.html` and `example.html` offer it alongside **Pocket Paint Pals**, the existing pixel art. The default remains Pocket Paint Pals until a visitor chooses a companion.
+The completed illustrated sets are **Sister Sprinkles** and **Blueberry Battle Buddies**. Both `index.html` and `example.html` offer them alongside **Pocket Paint Pals**, the existing pixel art. The default remains Pocket Paint Pals until a visitor chooses a companion.
 
 | Theme | Character family | Status |
 | --- | --- | --- |
 | Pocket Paint Pals | Original painting tools and weather sprites | Ready |
 | Sister Sprinkles | White-haired armored painting sisters | Ready |
-| Blueberry Battle Buddies | Blue-armored space marines | Reference ready |
+| Blueberry Battle Buddies | Poppy, the cheerful redhead in blue-and-gold armor | Ready |
 | Greater Goodies | T’au and their hovering helpers | Reference ready |
 | Little Miss Heresy | Chaos companions | Reference ready |
 | Nibbly Nids | Tyranid little nibblers | Reference ready |
@@ -14,7 +14,7 @@ The first illustrated set is **Sister Sprinkles**. Both `index.html` and `exampl
 | Dakka Ducklings | Ork companions | Reference ready |
 | Sunbeam Seraphs | Winged golden saints | Reference ready |
 
-The seven reference illustrations were supplied by the project owner. They are a direction for future full sets, not interchangeable weather poses. The picker shows them under “Meet the next little companions” and disables their options until those sets are complete.
+The seven reference illustrations were supplied by the project owner. Blueberry Battle Buddies now has a complete weather atlas based on its reference; the remaining six references appear under “Meet the next little companions” with disabled options until their sets are complete. The remaining sets are intended for this same PR, following the redhead’s design pass.
 
 ## Shared behavior
 
@@ -35,7 +35,9 @@ Character holders use `data-weather-sprite` with one of these states:
 | `hot` | Cooling off with a palette | Bottom center |
 | `bench` | Shaking a primer can | Bottom right |
 
-The completed atlas has three columns and two rows at 1536 × 1024 pixels, with alpha transparency. The heat pose uses `sisters-heat-atlas-v2.png`, which has the cleaned-up sun. Every other pose uses the original atlas. Source prompts and edits are recorded in `assets/themes/sister-sprinkles/artwork-notes.txt`.
+Both completed atlases have three columns and two rows at 1536 × 1024 pixels, with alpha transparency. Sister Sprinkles’ heat pose uses `sisters-heat-atlas-v2.png`, which has the cleaned-up sun. Every other sister pose uses the original atlas. Blueberry Battle Buddies uses one `blueberry-atlas.png` for all six poses, including a clean little sun on the heat pose. Each theme directory contains its artwork prompt and provenance.
+
+Poppy’s six poses cover painting a tiny green miniature, inspecting a cloudy varnish bottle, sheltering her miniature under an umbrella, shivering in a scarf, fanning herself with a palette, and shaking a primer can. Her theme uses navy surfaces, warm gold caution accents, mint good conditions, and rose bench-day accents. Both illustrated sets share the same compact character sizing, gallery layout, and reduced-motion rules through `data-companion-style="illustrated"`.
 
 For each future theme, prepare all six poses with consistent scale, framing, and transparency; give its registry entry an `artClass` and theme CSS for its atlas and layout; then mark it ready. The generic character renderer uses that class and the six shared pose positions. Do not use a reference image as a fallback for missing poses. Themes must leave the whole-day card and full hourly strip together, honor reduced motion, and remain usable at 320px.
 

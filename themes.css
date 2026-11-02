@@ -25,6 +25,15 @@ html[data-companion-theme="sister-sprinkles"] {
 }
 .theme-character { display: block; width: 100%; height: 100%; aspect-ratio: 1; background-size: 300% 200%; background-repeat: no-repeat; }
 .sister-sprinkles.theme-character { background-image: url('assets/themes/sister-sprinkles/sisters-atlas.png'); }
+.blueberry-battle-buddies.theme-character { background-image: url('assets/themes/blueberry-battle-buddies/blueberry-atlas.png'); }
+html[data-companion-theme="blueberry-battle-buddies"] {
+  --primer: #0c1428; --panel: #132039; --ink: #fff4e5; --faint: #bacbe5; --border: #344968;
+  --good: #83e4cc; --good-bg: #83e4cc0a; --good-glow: #83e4cc26;
+  --meh: #f3c37c; --meh-bg: #f3c37c0a; --meh-glow: #f3c37c26;
+  --skip: #ff96b4; --skip-bg: #ff96b40a; --skip-glow: #ff96b426;
+  --hot: #ffae73; --cold: #9ec8ff;
+}
+html[data-companion-theme="blueberry-battle-buddies"] header .asterisk { color: #f3c37c; }
 .theme-pose-0 { background-position: 0 0; }
 .theme-pose-1 { background-position: 50% 0; }
 .theme-pose-2 { background-position: 100% 0; }
@@ -32,28 +41,28 @@ html[data-companion-theme="sister-sprinkles"] {
 .theme-pose-4 { background-position: 50% 100%; }
 .sister-sprinkles.theme-pose-4 { background-image: url('assets/themes/sister-sprinkles/sisters-heat-atlas-v2.png'); }
 .theme-pose-5 { background-position: 100% 100%; }
-html[data-companion-theme="sister-sprinkles"] .sprite-container[data-weather-sprite] { width: 106px; height: 106px; flex: 0 0 106px; border: 0; background: none; }
-html[data-companion-theme="sister-sprinkles"] .gallery-pod > [data-weather-sprite] { width: 100%; max-width: 76px; height: auto; aspect-ratio: 1; }
-html[data-companion-theme="sister-sprinkles"] .gallery-pod .theme-character { height: auto; margin-top: 0; }
+html[data-companion-style="illustrated"] .sprite-container[data-weather-sprite] { width: 106px; height: 106px; flex: 0 0 106px; border: 0; background: none; }
+html[data-companion-style="illustrated"] .gallery-pod > [data-weather-sprite] { width: 100%; max-width: 76px; height: auto; aspect-ratio: 1; }
+html[data-companion-style="illustrated"] .gallery-pod .theme-character { height: auto; margin-top: 0; }
 .gallery-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .gallery-pod { min-width: 0; }
 .hourly-timeline { grid-template-columns: repeat(11, minmax(0, 1fr)); }
 .hour-block { min-width: 0; }
 .hour-num { font-size: 10px; }
 @media (min-width: 540px) { .gallery-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
-html[data-companion-theme="sister-sprinkles"] .chip { border-radius: 20px; }
-html[data-companion-theme="sister-sprinkles"] .intro { margin-bottom: 24px; }
-html[data-companion-theme="sister-sprinkles"] .intro h2 { font-size: clamp(32px, 6vw, 52px); line-height: 1.05; }
-html[data-companion-theme="sister-sprinkles"] .label { font-size: 11px; }
-html[data-companion-theme="sister-sprinkles"] .stat .k, html[data-companion-theme="sister-sprinkles"] .hourly-header { font-size: 10px; }
-html[data-companion-theme="sister-sprinkles"] .hour-block { min-height: 44px; }
+html[data-companion-style="illustrated"] .chip { border-radius: 20px; }
+html[data-companion-style="illustrated"] .intro { margin-bottom: 24px; }
+html[data-companion-style="illustrated"] .intro h2 { font-size: clamp(32px, 6vw, 52px); line-height: 1.05; }
+html[data-companion-style="illustrated"] .label { font-size: 11px; }
+html[data-companion-style="illustrated"] .stat .k, html[data-companion-style="illustrated"] .hourly-header { font-size: 10px; }
+html[data-companion-style="illustrated"] .hour-block { min-height: 44px; }
 header { flex-wrap: wrap; gap: 12px; }
 .header-actions { flex-wrap: wrap; }
 @media (max-width: 480px) {
-  html[data-companion-theme="sister-sprinkles"] .sprite-container[data-weather-sprite] { width: 86px; height: 86px; flex-basis: 86px; }
+  html[data-companion-style="illustrated"] .sprite-container[data-weather-sprite] { width: 86px; height: 86px; flex-basis: 86px; }
   .theme-reference-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .theme-drawer { padding: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  html[data-companion-theme="sister-sprinkles"] *, html[data-companion-theme="sister-sprinkles"] *::before, html[data-companion-theme="sister-sprinkles"] *::after { animation: none !important; transition: none !important; }
+  html[data-companion-style="illustrated"] *, html[data-companion-style="illustrated"] *::before, html[data-companion-style="illustrated"] *::after { animation: none !important; transition: none !important; }
 }

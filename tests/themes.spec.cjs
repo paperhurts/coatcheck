@@ -38,7 +38,7 @@ const url = name => pathToFileURL(path.join(root, name)).href;
     await page.locator('.theme-character').first().waitFor();
     assert.equal(await page.locator('#inspect-0').innerHTML(), inspection, 'Switching themes must preserve hour advice');
     assert.equal(await page.locator('#hourly-0').isVisible(), true, 'The open day must stay open');
-    assert.equal(await page.locator('#theme-select option:disabled').count(), 7);
+    assert.equal(await page.locator('#theme-select option:disabled').count(), 6);
     assert.equal(await page.evaluate(() => localStorage.getItem('cc_theme')), 'sister-sprinkles');
     const src = await page.locator('.theme-character').first().evaluate(el => getComputedStyle(el).backgroundImage);
     assert.match(src, /sisters-atlas\.png/);
@@ -85,7 +85,7 @@ const url = name => pathToFileURL(path.join(root, name)).href;
       await page.locator('#theme-toggle').click();
       await page.locator('.theme-future summary').click();
       const images = page.locator('.theme-reference-grid img');
-      assert.equal(await images.count(), 7);
+      assert.equal(await images.count(), 6);
       for (const image of await images.all()) {
         await image.scrollIntoViewIfNeeded();
         await image.evaluate(img => img.decode());
@@ -105,6 +105,46 @@ const url = name => pathToFileURL(path.join(root, name)).href;
         await image.decode();
         if (image.naturalWidth !== 1536 || image.naturalHeight !== 1024) throw Error('Unexpected atlas dimensions');
       });
+    }
+    // The redhead has her own complete atlas and palette, with the same compact behavior.
+    await page.locator('#theme-toggle').click();
+    await page.locator('#theme-select').selectOption('blueberry-battle-buddies');
+    await page.locator('#theme-close').click();
+    for (const pose of [0, 1, 2, 3, 4, 5]) {
+      const art = page.locator(`.blueberry-battle-buddies.theme-pose-${pose}`).first();
+      assert.ok(await art.count(), `Missing redhead pose ${pose}`);
+      await art.evaluate(async el => {
+        const image = new Image(); image.src = getComputedStyle(el).backgroundImage.slice(5, -2);
+        await image.decode();
+        if (image.naturalWidth !== 1536 || image.naturalHeight !== 1024) throw Error('Unexpected redhead atlas dimensions');
+      });
+    }
+    assert.equal(await page.locator('html').getAttribute('data-companion-style'), 'illustrated');
+    for (const width of [320, 390, 1024]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.locator('#days .chip').first().click();
+      await page.locator('#hourly-0 .hour-block').nth(4).click();
+      const advice = await page.locator('#inspect-0').innerHTML();
+      assert.equal(await page.locator('#hourly-0 .hour-block:visible').count(), hourlyCount);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `Redhead overflow at ${width}px`);
+      await page.locator('#theme-toggle').click();
+      await page.locator('#theme-select').selectOption('sister-sprinkles');
+      await page.locator('#theme-select').selectOption('blueberry-battle-buddies');
+      assert.equal(await page.locator('#inspect-0').innerHTML(), advice, 'Switching between illustrated themes must keep the selected hour');
+      await page.locator('#theme-close').click();
+      await page.locator('#days .chip').first().click();
+    }
+    await page.reload();
+    await page.locator('.blueberry-battle-buddies.theme-character').first().waitFor();
+    assert.equal(await page.locator('#theme-select').inputValue(), 'blueberry-battle-buddies');
+    await page.locator('#slider-rhMax').fill('60');
+    await page.locator('#slider-rhMax').dispatchEvent('input');
+    await page.waitForFunction(() => document.querySelectorAll('#days .blueberry-battle-buddies.theme-character').length === 7);
+    if (process.env.THEME_SCREENSHOTS) {
+      await page.setViewportSize({ width: 390, height: 1000 });
+      await page.locator('#days .chip').first().click();
+      await page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.effect.getComputedTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));
+      await page.locator('#days').screenshot({ path: path.join(process.env.THEME_SCREENSHOTS, 'blueberry-weather-cards.png') });
     }
     await page.evaluate(() => localStorage.setItem('cc_theme', 'nibbly-nids'));
     await page.reload();

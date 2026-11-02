@@ -49,9 +49,9 @@ Resting on the workshop bench is an interactive 3D-feeling rattle can:
 
 ## ♡ Pick a painting companion
 
-Use **♡ Theme** on the live forecast or demo to choose **Pocket Paint Pals** (the original pixel sprites) or **Sister Sprinkles** (the completed illustrated sisters). Your choice is remembered in this browser and shared between the two pages. Theme changes keep your open day, selected hour, and forecast advice in place.
+Use **♡ Theme** on the live forecast or demo to choose **Pocket Paint Pals** (the original pixel sprites), **Sister Sprinkles** (the illustrated sisters), or **Blueberry Battle Buddies** (Poppy, the cute redhead in blue-and-gold armor). Both illustrated sets include all six weather and bench poses. Your choice is remembered in this browser and shared between the two pages. Theme changes keep your open day, selected hour, and forecast advice in place.
 
-The picker also introduces seven upcoming character sets, with the supplied reference art and cute names. They stay unavailable until their complete weather artwork is ready. See [THEMES.md](THEMES.md) for the roster and how to add a set.
+The picker also introduces six upcoming character sets, with the supplied reference art and cute names. They stay unavailable until their complete weather artwork is ready. See [THEMES.md](THEMES.md) for the roster and how to add a set.
 
 The [interactive sisters sample](sisters-preview.html) includes six illustrative weather days, character quotes, and the primer-can bench. It shares artwork with the live theme; it does not request live forecasts.
 
