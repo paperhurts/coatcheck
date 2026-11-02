@@ -6,7 +6,7 @@ Final asset: blueberry-atlas.png
 Dimensions: 1536 x 1024, RGBA with transparent empty space.
 Layout: three columns, two rows, six equal 512 x 512 cells.
 Order: ready, humidity, rain, cold, heat, bench.
-Used by the live forecast and demo via the shared illustrated-theme renderer.
+Source master for atlas.webp and portrait.webp (tools/build-theme-art.cjs), which the live forecast, demo, and portrait picker load.
 
 Generation prompt:
 Use case: stylized-concept. Asset type: one finished six-pose character sprite atlas for the CoatCheck miniature-painting weather website. Image 1 is the character identity and drawing-style reference; Image 2 shows ONLY the required 3-column x 2-row pose arrangement. DO NOT copy the white-haired sister, dark armor, or decorative glitches from image 2. Draw the SAME adorable redheaded blue-armored woman from IMAGE 1 in all six cells. Keep the bright orange-red bob with sweeping side bangs, happy round face and rosy cheeks with tiny blue cheek markings, bulky cobalt Ultramarines-style power armor, white omega shoulder insignia, gold trim, winged skull chest ornament, little parchment seal, chunky armored boots. Cute feminine chibi face, large head and small body, expressive emotions; crisp pixel-edged game sticker illustration faithful to IMAGE 1. Consistent character identity, armor, scale, and head proportions across all six poses. No weapons; she is a miniature painting companion.

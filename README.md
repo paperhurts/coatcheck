@@ -63,7 +63,9 @@ The [interactive sisters sample](sisters-preview.html) includes six illustrative
 *   `icon-180.png` — An adorable 180x180 PWA home screen icon featuring the custom "Perfect Spray Can" pixel mascot on our midnight primer background.
 *   `README.md` — This file!
 *   `themes.js` / `themes.css` — Shared companion picker, persistence, character mapping, and theme styling.
-*   `assets/themes/` — Eight complete illustrated companion sets, artwork prompts/provenance, and original character references.
+*   `assets/themes/` — Eight complete illustrated companion sets (source masters plus the small `atlas.webp`/`portrait.webp` the app loads), artwork prompts/provenance, and original character references.
+*   `tools/build-theme-art.cjs` — Optional Playwright script that rebuilds the web-size companion art from the source masters.
+*   `tests/themes-check.cjs` — Optional Playwright regression check for the companion themes.
 *   `THEMES.md` — Theme roster, asset contract, and verification instructions.
 
 ---

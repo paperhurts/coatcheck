@@ -8,11 +8,12 @@ Final background-removal prompt (verbatim):
 Background removal only. Remove every background and all ambient backdrop glow from this 3-column 2-row character sprite atlas. Make the empty space genuinely transparent alpha. Keep ALL six characters, their props, raindrops, sun, snowflake, hearts and motion accents intact. Preserve the EXACT 1536x1024 dimensions, exact positions, proportions, equal 512x512 cell grid, character designs, colors and poses. Do not enlarge or shift any character. No new content. No UI. No text. The result must have transparent empty space between and around the six separate sticker characters, without gradient rectangles.
 
 Files:
-sisters-atlas.png - source character atlas, with alpha transparency.
+sisters-atlas.png - source character atlas (1536x1024), with alpha transparency.
+atlas.webp, portrait.webp - web copies built by tools/build-theme-art.cjs.
 ../../../sisters-preview.html - interactive sample sharing the theme assets.
 
 Sample forecasts are illustrative, not live. This is a fan concept and does not replace index.html.
 
 Heat artwork cleanup, built-in OpenAI image generation tool:
 Precise local cleanup of the tiny orange sun above the palette in the bottom-middle cell. Remove the ugly white/orange squiggly fragments below and to its right, restoring transparent empty space. Keep one clean round golden-orange sun with a smooth disc and six to eight simple evenly spaced straight rays. No steam, heat waves, white fragments or extra marks. Preserve the sister, props, pose, grid, dimensions and transparency. Change only the little sun and surrounding unwanted fragments.
-Saved as sisters-heat-atlas-v2.png. Only the heat character uses this edited atlas; all other characters retain the original atlas. The live app, demo, and interactive sample share these assets.
+That edit was first saved as a separate sisters-heat-atlas-v2.png, but the regeneration left a faint gray haze across the whole image. It was replaced by a lossless pixel patch of sisters-atlas.png itself: the stray fragments the edit had removed (large connected blobs beside and below the sun, plus a 2px fringe) were made fully transparent in the bottom-middle cell. The original sun, character, and every other pose are untouched, and the background stays genuinely transparent.

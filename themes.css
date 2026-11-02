@@ -1,5 +1,4 @@
-/* Theme chrome is shared; forecast structure and hourly controls stay together. */
-[hidden] { display: none !important; }
+/* Companion theme chrome, palettes, and character art. Page layout lives in each page's own styles. */
 .theme-toggle { min-height: 36px; }
 .theme-drawer { margin: 0 0 24px; padding: 20px; border: 1px solid var(--border); border-radius: 16px; background: var(--panel); }
 .theme-drawer-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
@@ -15,33 +14,41 @@
 .theme-choice { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--primer); color: var(--ink); font: inherit; cursor: pointer; }
 .theme-choice:hover, .theme-choice[aria-pressed="true"] { border-color: var(--good); }
 .theme-choice[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--good); }
-.theme-choice .theme-character { width: 88px; height: 88px; flex-shrink: 0; }
-.theme-choice img { object-fit: contain; border-radius: 10px; }
+.theme-choice img { flex-shrink: 0; object-fit: contain; border-radius: 10px; }
 .theme-choice-name { font-size: 12px; line-height: 1.5; text-align: center; overflow-wrap: anywhere; }
 .theme-drawer :focus-visible, .theme-toggle:focus-visible { outline: 2px solid var(--good); outline-offset: 4px; }
+
+/* Each atlas is three columns by two rows of poses; see THEMES.md for the asset contract. */
+.theme-character { display: block; width: 100%; height: 100%; aspect-ratio: 1; background-size: 300% 200%; background-repeat: no-repeat; }
+.sister-sprinkles.theme-character { background-image: url('assets/themes/sister-sprinkles/atlas.webp'); }
+.blueberry-battle-buddies.theme-character { background-image: url('assets/themes/blueberry-battle-buddies/atlas.webp'); }
+.greater-goodies.theme-character { background-image: url('assets/themes/greater-goodies/atlas.webp'); }
+.little-miss-heresy.theme-character { background-image: url('assets/themes/little-miss-heresy/atlas.webp'); }
+.nibbly-nids.theme-character { background-image: url('assets/themes/nibbly-nids/atlas.webp'); }
+.sleepy-tomb-beans.theme-character { background-image: url('assets/themes/sleepy-tomb-beans/atlas.webp'); }
+.dakka-ducklings.theme-character { background-image: url('assets/themes/dakka-ducklings/atlas.webp'); }
+.sunbeam-seraphs.theme-character { background-image: url('assets/themes/sunbeam-seraphs/atlas.webp'); }
+.theme-pose-0 { background-position: 0 0; }
+.theme-pose-1 { background-position: 50% 0; }
+.theme-pose-2 { background-position: 100% 0; }
+.theme-pose-3 { background-position: 0 100%; }
+.theme-pose-4 { background-position: 50% 100%; }
+.theme-pose-5 { background-position: 100% 100%; }
+
+/* Palettes override the page's :root variables; glows and tints derive from these. */
 html[data-companion-theme="sister-sprinkles"] {
   --primer: #110d1c; --panel: #1a1527; --ink: #f9f1ed; --faint: #c1b0cc; --border: #43334f;
   --good: #51e7d2; --good-bg: #51e7d20a; --good-glow: #51e7d226;
   --meh: #c4a0f4; --meh-bg: #c4a0f40a; --meh-glow: #c4a0f426;
-  --skip: #ff7b9e; --skip-bg: #ff7b9e0a; --skip-glow: #ff7b9e26;
+  --skip: #ff7b9e; --skip-bg: #ff7b9e0a; --skip-glow: #ff7b9e26; --hot: #ffad85; --cold: #a9c8ff;
 }
-.theme-character { display: block; width: 100%; height: 100%; aspect-ratio: 1; background-size: 300% 200%; background-repeat: no-repeat; }
-.sister-sprinkles.theme-character { background-image: url('assets/themes/sister-sprinkles/sisters-atlas.png'); }
-.blueberry-battle-buddies.theme-character { background-image: url('assets/themes/blueberry-battle-buddies/blueberry-atlas.png'); }
 html[data-companion-theme="blueberry-battle-buddies"] {
   --primer: #0c1428; --panel: #132039; --ink: #fff4e5; --faint: #bacbe5; --border: #344968;
   --good: #83e4cc; --good-bg: #83e4cc0a; --good-glow: #83e4cc26;
   --meh: #f3c37c; --meh-bg: #f3c37c0a; --meh-glow: #f3c37c26;
-  --skip: #ff96b4; --skip-bg: #ff96b40a; --skip-glow: #ff96b426;
-  --hot: #ffae73; --cold: #9ec8ff;
+  --skip: #ff96b4; --skip-bg: #ff96b40a; --skip-glow: #ff96b426; --hot: #ffae73; --cold: #9ec8ff;
 }
 html[data-companion-theme="blueberry-battle-buddies"] header .asterisk { color: #f3c37c; }
-.greater-goodies.theme-character { background-image: url('assets/themes/greater-goodies/greater-goodies-atlas.png'); }
-.little-miss-heresy.theme-character { background-image: url('assets/themes/little-miss-heresy/little-miss-heresy-atlas.png'); }
-.nibbly-nids.theme-character { background-image: url('assets/themes/nibbly-nids/nibbly-nids-atlas.png'); }
-.sleepy-tomb-beans.theme-character { background-image: url('assets/themes/sleepy-tomb-beans/sleepy-tomb-beans-atlas.png'); }
-.dakka-ducklings.theme-character { background-image: url('assets/themes/dakka-ducklings/dakka-ducklings-atlas.png'); }
-.sunbeam-seraphs.theme-character { background-image: url('assets/themes/sunbeam-seraphs/sunbeam-seraphs-atlas.png'); }
 html[data-companion-theme="greater-goodies"] {
   --primer: #0d1b21; --panel: #172a31; --ink: #fff4e6; --faint: #bacfd2; --border: #36545b;
   --good: #89e1d5; --good-bg: #89e1d50a; --good-glow: #89e1d526;
@@ -78,35 +85,23 @@ html[data-companion-theme="sunbeam-seraphs"] {
   --meh: #f5d18a; --meh-bg: #f5d18a0a; --meh-glow: #f5d18a26;
   --skip: #ffb0b8; --skip-bg: #ffb0b80a; --skip-glow: #ffb0b826; --hot: #f8bd8b; --cold: #bfd5ff;
 }
-.theme-pose-0 { background-position: 0 0; }
-.theme-pose-1 { background-position: 50% 0; }
-.theme-pose-2 { background-position: 100% 0; }
-.theme-pose-3 { background-position: 0 100%; }
-.theme-pose-4 { background-position: 50% 100%; }
-.sister-sprinkles.theme-pose-4 { background-image: url('assets/themes/sister-sprinkles/sisters-heat-atlas-v2.png'); }
-.theme-pose-5 { background-position: 100% 100%; }
+
+/* Shared sizing for every illustrated set. */
 html[data-companion-style="illustrated"] .sprite-container[data-weather-sprite] { width: 106px; height: 106px; flex: 0 0 106px; border: 0; background: none; }
 html[data-companion-style="illustrated"] .gallery-pod > [data-weather-sprite] { width: 100%; max-width: 76px; height: auto; aspect-ratio: 1; }
 html[data-companion-style="illustrated"] .gallery-pod .theme-character { height: auto; margin-top: 0; }
-.gallery-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.gallery-pod { min-width: 0; }
-.hourly-timeline { grid-template-columns: repeat(11, minmax(0, 1fr)); }
-.hour-block { min-width: 0; }
-.hour-num { font-size: 10px; }
-@media (min-width: 540px) { .gallery-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
 html[data-companion-style="illustrated"] .chip { border-radius: 20px; }
 html[data-companion-style="illustrated"] .intro { margin-bottom: 24px; }
 html[data-companion-style="illustrated"] .intro h2 { font-size: clamp(32px, 6vw, 52px); line-height: 1.05; }
 html[data-companion-style="illustrated"] .label { font-size: 11px; }
 html[data-companion-style="illustrated"] .stat .k, html[data-companion-style="illustrated"] .hourly-header { font-size: 10px; }
 html[data-companion-style="illustrated"] .hour-block { min-height: 44px; }
-header { flex-wrap: wrap; gap: 12px; }
-.header-actions { flex-wrap: wrap; }
 @media (max-width: 480px) {
   html[data-companion-style="illustrated"] .sprite-container[data-weather-sprite] { width: 86px; height: 86px; flex-basis: 86px; }
   .theme-choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .theme-drawer { padding: 16px; }
 }
+/* Applies to every theme, including the original pixel pals. */
 @media (prefers-reduced-motion: reduce) {
-  html[data-companion-style="illustrated"] *, html[data-companion-style="illustrated"] *::before, html[data-companion-style="illustrated"] *::after { animation: none !important; transition: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }

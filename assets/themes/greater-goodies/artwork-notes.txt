@@ -6,7 +6,7 @@ Asset: greater-goodies-atlas.png
 Dimensions: 1536 x 1024, RGBA with transparent empty space.
 Layout: 3 columns x 2 rows, 512 x 512 cells.
 Pose order: ready, humidity, rain, cold, heat, bench.
-Used by the live forecast, scenario demo, and portrait picker.
+Source master for atlas.webp and portrait.webp (tools/build-theme-art.cjs), which the live forecast, scenario demo, and portrait picker load.
 
 Generation prompt (verbatim):
 Use case: stylized-concept. Asset type: ONE six-pose character sprite atlas for the CoatCheck miniature-painting weather website. The attached image is the CHARACTER IDENTITY reference; create new poses of that exact cute character, not a UI or screenshot.

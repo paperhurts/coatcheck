@@ -6,7 +6,7 @@ Asset: little-miss-heresy-atlas.png
 Dimensions: 1536 x 1024, RGBA with transparent empty space.
 Layout: 3 columns x 2 rows, 512 x 512 cells.
 Pose order: ready, humidity, rain, cold, heat, bench.
-Used by the live forecast, scenario demo, and portrait picker.
+Source master for atlas.webp and portrait.webp (tools/build-theme-art.cjs), which the live forecast, scenario demo, and portrait picker load.
 
 Final background cleanup (built-in image-generation tool):
 BACKGROUND REMOVAL ONLY. This is a six-character sprite atlas. Remove the entire white/gray background and every background shadow, making ALL empty space genuinely transparent with alpha exactly zero. Preserve all SIX character drawings and their props, sun, sparkle, droplets, motion marks and snowflake exactly. Do not redraw or reposition the characters. Preserve 1536x1024 image dimensions and 3 columns x 2 rows of 512px cells. No cropping, resizing, reflow, background fill or new content. Keep dark armor opaque, keep gold and red costume and every face exactly as given. Output a real transparent PNG with clear alpha cutouts around the six stickers; no white haze, no gray halo.
