@@ -6,12 +6,12 @@
     { id: 'pocket-paint-pals', name: 'Pocket Paint Pals', ready: true, description: 'The original tiny pixel painting friends.' },
     { id: 'sister-sprinkles', name: 'Sister Sprinkles', ready: true, artClass: 'sister-sprinkles', description: 'Little armored sisters, two thin coats, and a tiny crusade.' },
     { id: 'blueberry-battle-buddies', name: 'Blueberry Battle Buddies', ready: true, artClass: 'blueberry-battle-buddies', reference: 'blueberry-battle-buddies.jpg', description: 'Meet Poppy: a cheerful redhead in blue-and-gold armor, ready to protect your tiny coats.' },
-    { id: 'greater-goodies', name: 'Greater Goodies', reference: 'greater-goodies.jpg', description: 'Blue little friends with a helpful hovering companion.' },
-    { id: 'little-miss-heresy', name: 'Little Miss Heresy', reference: 'little-miss-heresy.jpg', description: 'A little mischief, a lot of tiny coats.' },
-    { id: 'nibbly-nids', name: 'Nibbly Nids', reference: 'nibbly-nids.jpg', description: 'Small claws. Big painting appetite.' },
-    { id: 'sleepy-tomb-beans', name: 'Sleepy Tomb Beans', reference: 'sleepy-tomb-beans.jpg', description: 'Cozy ancient metal beans with glowing green eyes.' },
-    { id: 'dakka-ducklings', name: 'Dakka Ducklings', reference: 'dakka-ducklings.jpg', description: 'Happy green little noise enthusiasts.' },
-    { id: 'sunbeam-seraphs', name: 'Sunbeam Seraphs', reference: 'sunbeam-seraphs.jpg', description: 'Golden wings and sunny little blessings.' }
+    { id: 'greater-goodies', name: 'Greater Goodies', ready: true, artClass: 'greater-goodies', reference: 'greater-goodies.jpg', description: 'Pip and a helpful hovering friend: a little teamwork for the greater good of your minis.' },
+    { id: 'little-miss-heresy', name: 'Little Miss Heresy', ready: true, artClass: 'little-miss-heresy', reference: 'little-miss-heresy.jpg', description: 'Hexie brings tiny horns, a mischievous grin, and suspiciously lovely thin coats.' },
+    { id: 'nibbly-nids', name: 'Nibbly Nids', ready: true, artClass: 'nibbly-nids', reference: 'nibbly-nids.jpg', description: 'Niblet has small claws, a big painting appetite, and a very precious little miniature.' },
+    { id: 'sleepy-tomb-beans', name: 'Sleepy Tomb Beans', ready: true, artClass: 'sleepy-tomb-beans', reference: 'sleepy-tomb-beans.jpg', description: 'Dozy has ancient bones, bright green eyes, and all the time in the world for another coat.' },
+    { id: 'dakka-ducklings', name: 'Dakka Ducklings', ready: true, artClass: 'dakka-ducklings', reference: 'dakka-ducklings.jpg', description: 'Gubbin is a happy green hobby buddy. More shaking, more painting, more happy little minis.' },
+    { id: 'sunbeam-seraphs', name: 'Sunbeam Seraphs', ready: true, artClass: 'sunbeam-seraphs', reference: 'sunbeam-seraphs.jpg', description: 'Sunny wraps your tiny projects in golden wings, gentle encouragement, and little blessings.' }
   ];
   const poses = { perfect: 0, good: 0, cloudy: 1, humid: 1, rainy: 2, cold: 3, hot: 4, bench: 5 };
   const poseLabels = ['painting a miniature', 'checking a varnish bottle', 'sheltering miniatures under an umbrella', 'keeping warm in a scarf', 'cooling off with a palette', 'shaking a primer can'];
@@ -74,10 +74,9 @@
       <label for="theme-select">Companion theme</label>
       <select id="theme-select">
         <optgroup label="Ready to paint">${themes.filter(t => t.ready).map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</optgroup>
-        <optgroup label="Coming soon · weather poses in progress">${themes.filter(t => !t.ready).map(t => `<option value="${t.id}" disabled>${t.name}</option>`).join('')}</optgroup>
       </select>
       <p id="theme-description"></p><p class="theme-feedback" id="theme-feedback" role="status"></p>
-      <details class="theme-future"><summary>Meet the next little companions</summary><p>Character references for future themes. Each will get a full set of weather poses before becoming selectable.</p><div class="theme-reference-grid">${themes.filter(t => !t.ready).map(t => `<figure><img src="assets/themes/references/${t.reference}" alt="${t.description}" width="160" height="160" loading="lazy"><figcaption>${t.name}<span>Coming soon</span></figcaption></figure>`).join('')}</div></details>`;
+      <details class="theme-gallery"><summary>Meet all the painting pals</summary><div class="theme-choice-grid">${themes.filter(t => t.ready).map(t => `<button type="button" class="theme-choice" data-theme-choice="${t.id}" aria-pressed="false">${t.artClass ? `<span class="theme-character ${t.artClass} theme-pose-0" aria-hidden="true"></span>` : '<img src="icon-180.png" alt="" width="88" height="88" loading="lazy">'}<span class="theme-choice-name">${t.name}</span></button>`).join('')}</div></details>`;
     header.after(drawer);
     const select = drawer.querySelector('select');
     const feedback = drawer.querySelector('#theme-feedback');
@@ -86,6 +85,7 @@
       document.documentElement.dataset.companionStyle = current.artClass ? 'illustrated' : 'pixel';
       select.value = current.id;
       drawer.querySelector('#theme-description').textContent = current.description;
+      drawer.querySelectorAll('[data-theme-choice]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === current.id)));
       paintCharacters();
     }
     function close() { drawer.hidden = true; toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); }
@@ -96,13 +96,15 @@
     });
     drawer.querySelector('#theme-close').addEventListener('click', close);
     drawer.addEventListener('keydown', event => { if (event.key === 'Escape') { event.preventDefault(); close(); } });
-    select.addEventListener('change', () => {
-      current = readyTheme(select.value);
+    function choose(id) {
+      current = readyTheme(id);
       let saved = true;
       try { localStorage.setItem(STORAGE_KEY, current.id); } catch { saved = false; }
       apply();
       feedback.textContent = saved ? `${current.name} is your painting companion.` : `${current.name} selected for this visit. Browser storage is unavailable.`;
-    });
+    }
+    select.addEventListener('change', () => choose(select.value));
+    drawer.querySelectorAll('[data-theme-choice]').forEach(button => button.addEventListener('click', () => choose(button.dataset.themeChoice)));
     window.addEventListener('storage', event => {
       if (event.key === STORAGE_KEY || event.key === null) {
         current = readyTheme(event.newValue);
