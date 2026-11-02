@@ -63,7 +63,7 @@
       linear-gradient(var(--cutting-mat) 1px, transparent 1px),
       linear-gradient(90deg, var(--cutting-mat) 1px, transparent 1px),
       radial-gradient(circle at 47% 20%, rgba(85, 32, 111, 0.22), transparent 40%),
-      radial-gradient(circle at 85% 75%, rgba(0, 242, 254, 0.06), transparent 28%);
+      radial-gradient(circle at 85% 75%, color-mix(in srgb, var(--good) 6%, transparent), transparent 28%);
     background-size: 24px 24px, 24px 24px, auto, auto;
     overflow-x: hidden;
   }
@@ -77,6 +77,8 @@
   
   header {
     display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
     align-items: center;
     justify-content: space-between;
     padding: 8px 0 24px;
@@ -144,7 +146,7 @@
   
   /* Feature presentation header badge */
   .demo-hero {
-    background: linear-gradient(135deg, rgba(191, 134, 255, 0.1), rgba(0, 242, 254, 0.1));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--meh) 10%, transparent), color-mix(in srgb, var(--good) 10%, transparent));
     border: 2px solid var(--border);
     border-radius: 16px;
     padding: 20px;
@@ -184,17 +186,18 @@
   
   .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
   }
   
   @media (min-width: 540px) {
     .gallery-grid {
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(7, minmax(0, 1fr));
     }
   }
   
   .gallery-pod {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -292,9 +295,9 @@
     transform: translateY(-2px);
   }
   
-  .chip.good { border-color: rgba(0, 242, 254, 0.2); }
-  .chip.meh { border-color: rgba(191, 134, 255, 0.25); }
-  .chip.skip { border-color: rgba(255, 0, 85, 0.2); }
+  .chip.good { border-color: color-mix(in srgb, var(--good) 20%, transparent); }
+  .chip.meh { border-color: color-mix(in srgb, var(--meh) 25%, transparent); }
+  .chip.skip { border-color: color-mix(in srgb, var(--skip) 20%, transparent); }
   
   .chip.good:hover {
     border-color: var(--good);
@@ -442,9 +445,9 @@
     filter: drop-shadow(0 0 6px var(--glow-col));
   }
   
-  .sprite-container.good .pixel-sprite { --glow-col: rgba(0, 242, 254, 0.25); }
-  .sprite-container.meh .pixel-sprite { --glow-col: rgba(191, 134, 255, 0.2); }
-  .sprite-container.skip .pixel-sprite { --glow-col: rgba(255, 0, 85, 0.2); }
+  .sprite-container.good .pixel-sprite { --glow-col: color-mix(in srgb, var(--good) 25%, transparent); }
+  .sprite-container.meh .pixel-sprite { --glow-col: color-mix(in srgb, var(--meh) 20%, transparent); }
+  .sprite-container.skip .pixel-sprite { --glow-col: color-mix(in srgb, var(--skip) 20%, transparent); }
   
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
@@ -474,12 +477,13 @@
   
   .hourly-timeline {
     display: grid;
-    grid-template-columns: repeat(11, 1fr);
+    grid-template-columns: repeat(11, minmax(0, 1fr));
     gap: 4px;
     margin-bottom: 15px;
   }
   
   .hour-block {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -501,12 +505,12 @@
     transform: translateY(-2px);
   }
   
-  .hour-block.good.active { border-color: var(--good); box-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
-  .hour-block.meh.active { border-color: var(--meh); box-shadow: 0 0 8px rgba(191, 134, 255, 0.4); }
-  .hour-block.skip.active { border-color: var(--skip); box-shadow: 0 0 8px rgba(255, 0, 85, 0.4); }
+  .hour-block.good.active { border-color: var(--good); box-shadow: 0 0 8px color-mix(in srgb, var(--good) 40%, transparent); }
+  .hour-block.meh.active { border-color: var(--meh); box-shadow: 0 0 8px color-mix(in srgb, var(--meh) 40%, transparent); }
+  .hour-block.skip.active { border-color: var(--skip); box-shadow: 0 0 8px color-mix(in srgb, var(--skip) 40%, transparent); }
   
   .hour-num {
-    font-size: 8px;
+    font-size: 10px;
     color: var(--faint);
     margin-bottom: 6px;
   }
@@ -713,6 +717,8 @@
     display: inline-block;
   }
 </style>
+<link rel="stylesheet" href="themes.css">
+<script src="themes.js"></script>
 </head>
 <body>
 
@@ -794,7 +800,7 @@
   <div class="station-header label">Procedural Synthesis Workbench</div>
   <div class="station-body">
     <div class="spray-can-interactive" id="interactive-spray-can">
-      <div id="can-sprite-holder" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
+      <div id="can-sprite-holder" data-weather-sprite="bench" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
       <div class="can-controls">
         <button id="btn-shake" class="btn primary">Shake Can 🫨</button>
         <button id="btn-spray" class="btn secondary">Test Spray 💨</button>
@@ -1295,7 +1301,7 @@ function buildSpriteGallery() {
   container.innerHTML = Object.keys(SPRITES).map(key => {
     return `
       <div class="gallery-pod" onclick="playSpriteBoop('${key}')">
-        ${makeSpriteSVG(SPRITES[key], 42)}
+        <div data-weather-sprite="${key}">${makeSpriteSVG(SPRITES[key], 42)}</div>
         <span>${key}</span>
       </div>
     `;
@@ -1317,7 +1323,7 @@ function renderMockups() {
             <div class="code label">FIELD LOG · CC-${String(d.rh).padStart(2,"0")}${String(d.rain).padStart(2,"0")}</div>
             <div class="name">${name}</div>
           </div>
-          <div class="sprite-container ${dayVerdict}" role="img" aria-label="${d.sprite} sprite">
+          <div class="sprite-container ${dayVerdict}" data-weather-sprite="${d.sprite}" role="img" aria-label="${d.sprite} sprite">
             ${makeSpriteSVG(SPRITES[d.sprite], 48)}
           </div>
         </div>
@@ -1347,7 +1353,8 @@ function renderMockups() {
           <div class="hourly-header label">Hourly Painting Suitability (8:00 AM – 6:00 PM)</div>
           <div class="hourly-timeline">
             ${d.hourly.map((hPeriod, hpIndex) => {
-              const displayHour = hPeriod.startTime;
+              const hour = Number(hPeriod.startTime.split(':')[0]);
+              const displayHour = hour % 12 || 12;
               const hVerdict = calculatePeriodVerdict(hPeriod.temperature, hPeriod.relativeHumidity.value, hPeriod.probabilityOfPrecipitation.value);
               return `
                 <div class="hour-block ${hVerdict}" 

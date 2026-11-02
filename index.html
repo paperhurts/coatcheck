@@ -65,7 +65,7 @@
       linear-gradient(var(--cutting-mat) 1px, transparent 1px),
       linear-gradient(90deg, var(--cutting-mat) 1px, transparent 1px),
       radial-gradient(circle at 47% 20%, rgba(85, 32, 111, 0.22), transparent 40%),
-      radial-gradient(circle at 85% 75%, rgba(0, 242, 254, 0.06), transparent 28%);
+      radial-gradient(circle at 85% 75%, color-mix(in srgb, var(--good) 6%, transparent), transparent 28%);
     background-size: 24px 24px, 24px 24px, auto, auto;
     overflow-x: hidden;
   }
@@ -79,6 +79,8 @@
   
   header {
     display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
     align-items: center;
     justify-content: space-between;
     padding: 8px 0 36px;
@@ -110,6 +112,7 @@
   
   .header-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     align-items: center;
   }
@@ -280,7 +283,7 @@
   .intro h2 em {
     color: var(--good);
     font-style: normal;
-    text-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+    text-shadow: 0 0 25px color-mix(in srgb, var(--good) 40%, transparent);
   }
   
   .intro p {
@@ -333,9 +336,9 @@
     transform: translateY(-2px);
   }
   
-  .chip.good { border-color: rgba(0, 242, 254, 0.2); }
-  .chip.meh { border-color: rgba(191, 134, 255, 0.25); }
-  .chip.skip { border-color: rgba(255, 0, 85, 0.2); }
+  .chip.good { border-color: color-mix(in srgb, var(--good) 20%, transparent); }
+  .chip.meh { border-color: color-mix(in srgb, var(--meh) 25%, transparent); }
+  .chip.skip { border-color: color-mix(in srgb, var(--skip) 20%, transparent); }
   
   .chip.good:hover {
     border-color: var(--good);
@@ -485,9 +488,9 @@
     filter: drop-shadow(0 0 6px var(--glow-col));
   }
   
-  .sprite-container.good .pixel-sprite { --glow-col: rgba(0, 242, 254, 0.25); }
-  .sprite-container.meh .pixel-sprite { --glow-col: rgba(191, 134, 255, 0.2); }
-  .sprite-container.skip .pixel-sprite { --glow-col: rgba(255, 0, 85, 0.2); }
+  .sprite-container.good .pixel-sprite { --glow-col: color-mix(in srgb, var(--good) 25%, transparent); }
+  .sprite-container.meh .pixel-sprite { --glow-col: color-mix(in srgb, var(--meh) 20%, transparent); }
+  .sprite-container.skip .pixel-sprite { --glow-col: color-mix(in srgb, var(--skip) 20%, transparent); }
   
   /* Bouncing sprite animation on hover */
   @keyframes bounce {
@@ -518,12 +521,13 @@
   
   .hourly-timeline {
     display: grid;
-    grid-template-columns: repeat(11, 1fr);
+    grid-template-columns: repeat(11, minmax(0, 1fr));
     gap: 4px;
     margin-bottom: 15px;
   }
-  
+
   .hour-block {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -545,12 +549,12 @@
     transform: translateY(-2px);
   }
   
-  .hour-block.good.active { border-color: var(--good); box-shadow: 0 0 8px rgba(0, 242, 254, 0.4); }
-  .hour-block.meh.active { border-color: var(--meh); box-shadow: 0 0 8px rgba(191, 134, 255, 0.4); }
-  .hour-block.skip.active { border-color: var(--skip); box-shadow: 0 0 8px rgba(255, 0, 85, 0.4); }
+  .hour-block.good.active { border-color: var(--good); box-shadow: 0 0 8px color-mix(in srgb, var(--good) 40%, transparent); }
+  .hour-block.meh.active { border-color: var(--meh); box-shadow: 0 0 8px color-mix(in srgb, var(--meh) 40%, transparent); }
+  .hour-block.skip.active { border-color: var(--skip); box-shadow: 0 0 8px color-mix(in srgb, var(--skip) 40%, transparent); }
   
   .hour-num {
-    font-size: 8px;
+    font-size: 10px;
     color: var(--faint);
     margin-bottom: 6px;
   }
@@ -764,23 +768,23 @@
   }
   
   .live-badge {
-    background: rgba(0, 242, 254, 0.12);
+    background: color-mix(in srgb, var(--good) 12%, transparent);
     color: var(--good);
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: bold;
     font-size: 8px;
-    border: 1px solid rgba(0, 242, 254, 0.2);
+    border: 1px solid color-mix(in srgb, var(--good) 20%, transparent);
   }
   
   .warning-badge {
-    background: rgba(191, 134, 255, 0.12);
+    background: color-mix(in srgb, var(--meh) 12%, transparent);
     color: var(--meh);
     padding: 2px 6px;
     border-radius: 4px;
     font-weight: bold;
     font-size: 8px;
-    border: 1px solid rgba(191, 134, 255, 0.2);
+    border: 1px solid color-mix(in srgb, var(--meh) 20%, transparent);
   }
   
   @media (prefers-reduced-motion: no-preference) {
@@ -793,6 +797,8 @@
     }
   }
 </style>
+<link rel="stylesheet" href="themes.css">
+<script src="themes.js"></script>
 </head>
 <body>
 
@@ -896,7 +902,7 @@
   <div class="station-header label">Interactive Hobbyist bench</div>
   <div class="station-body">
     <div class="spray-can-interactive" id="interactive-spray-can">
-      <div id="can-sprite-holder" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
+      <div id="can-sprite-holder" data-weather-sprite="bench" style="width: 96px; height: 96px; display:flex; align-items:center; justify-content:center;"></div>
       <div class="can-controls">
         <button id="btn-shake" class="btn primary">Shake Can 🫨</button>
         <button id="btn-spray" class="btn secondary">Test Spray 💨</button>
@@ -1105,7 +1111,7 @@ function makeSpriteSVG(grid, size = 48) {
 
 function sprite(spriteName, verdict) {
   const grid = SPRITES[spriteName] || SPRITES.good;
-  return `<div class="sprite-container ${verdict}" role="img" aria-label="Cute weather sprite representing ${spriteName}">
+  return `<div class="sprite-container ${verdict}" data-weather-sprite="${spriteName}" role="img" aria-label="Cute weather sprite representing ${spriteName}">
     ${makeSpriteSVG(grid, 48)}
   </div>`;
 }

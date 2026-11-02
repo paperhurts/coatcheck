@@ -47,6 +47,14 @@ Resting on the workshop bench is an interactive 3D-feeling rattle can:
 
 ---
 
+## ♡ Pick a painting companion
+
+Use **♡ Theme** on the live forecast or demo to choose among **nine completed themes**: the original **Pocket Paint Pals** and eight illustrated companion sets. Choose from the dropdown or open **Meet all the painting pals** to pick a portrait. Each illustrated theme has its own palette and six weather/bench poses. Your choice is remembered in this browser and shared between the two pages. Theme changes keep your open day, selected hour, and forecast advice in place.
+
+Meet **Sister Sprinkles**, **Blueberry Battle Buddies**, **Greater Goodies**, **Little Miss Heresy**, **Nibbly Nids**, **Sleepy Tomb Beans**, **Dakka Ducklings**, and **Sunbeam Seraphs**. All are selectable now, with complete weather artwork. See [THEMES.md](THEMES.md) for their palettes, source prompts, and how to add another set.
+
+The [interactive sisters sample](sisters-preview.html) includes six illustrative weather days, character quotes, and the primer-can bench. It shares artwork with the live theme; it does not request live forecasts.
+
 ## 📂 File Directory
 
 *   `index.html` — The main weather application dashboard with live NWS API requests and browser Geolocation city-resolving.
@@ -54,6 +62,11 @@ Resting on the workshop bench is an interactive 3D-feeling rattle can:
 *   `manifest.webmanifest` — Standard web manifest declaring PWA standalone launch parameters and colors.
 *   `icon-180.png` — An adorable 180x180 PWA home screen icon featuring the custom "Perfect Spray Can" pixel mascot on our midnight primer background.
 *   `README.md` — This file!
+*   `themes.js` / `themes.css` — Shared companion picker, persistence, character mapping, and theme styling.
+*   `assets/themes/` — Eight complete illustrated companion sets (source masters plus the small `atlas.webp`/`portrait.webp` the app loads), artwork prompts/provenance, and original character references.
+*   `tools/build-theme-art.cjs` — Optional Playwright script that rebuilds the web-size companion art from the source masters.
+*   `tests/themes-check.cjs` — Optional Playwright regression check for the companion themes.
+*   `THEMES.md` — Theme roster, asset contract, and verification instructions.
 
 ---
 
