@@ -2,6 +2,7 @@
 // A plain script (not a @playwright/test spec): `node tests/themes-check.cjs`.
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const root = path.resolve(__dirname, '..');
@@ -10,6 +11,9 @@ const illustrated = ['sister-sprinkles', 'blueberry-battle-buddies', 'greater-go
 const allThemes = ['pocket-paint-pals', ...illustrated];
 const settle = page => page.evaluate(() => Promise.all(document.getAnimations().filter(a => a.effect.getComputedTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))));
 const noOverflow = async (page, label) => assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, label);
+const readManifest = folder => JSON.parse(fs.readFileSync(path.join(root, folder, 'manifest.webmanifest'), 'utf8'));
+// Everything but these is the same app across theme manifests: name, display, and the icon file names.
+const sharedFields = ({ start_url, theme_color, background_color, ...shared }) => shared;
 
 (async () => {
   const browser = await chromium.launch({ headless: true, ...(process.env.CC_BROWSER_CHANNEL ? { channel: process.env.CC_BROWSER_CHANNEL } : {}) });
@@ -34,6 +38,12 @@ const noOverflow = async (page, label) => assert.equal(await page.evaluate(() =>
     assert.equal(await page.locator('#hourly-0 .hour-block').count(), 10);
     await page.locator('#theme-toggle').click();
     assert.equal(await page.locator('#theme-select option').count(), 9);
+    assert.match(await page.locator('#theme-icon-note').innerText(), /app icon/);
+    // A default manifest URL in the markup can be fetched first and stick, so only themes.js sets it.
+    assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /<link rel="manifest">/, 'index.html must not give the manifest a default href');
+    const rootManifest = readManifest('');
+    assert.ok(['192x192', '512x512'].every(sizes => rootManifest.icons.some(icon => icon.sizes === sizes && !icon.purpose)), 'Chrome installs only with 192px and 512px icons');
+    assert.ok(rootManifest.icons.some(icon => icon.purpose === 'maskable'), 'Android needs a maskable icon to fill its icon shape');
     const palettes = new Set();
     for (const theme of allThemes) {
       await page.locator('#theme-select').selectOption(theme);
@@ -44,6 +54,17 @@ const noOverflow = async (page, label) => assert.equal(await page.evaluate(() =>
       const primer = await page.locator('html').evaluate(el => getComputedStyle(el).getPropertyValue('--primer').trim());
       assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'), primer, `${theme}: PWA theme-color not synced`);
       palettes.add(primer);
+      // Installing uses the theme's manifest and touch icon; only colors and the start_url spelling differ from the root's.
+      const folder = theme === 'pocket-paint-pals' ? '' : `assets/themes/${theme}/`;
+      assert.equal(await page.locator('link[rel="manifest"]').getAttribute('href'), `${folder}manifest.webmanifest`, `${theme}: manifest not swapped`);
+      assert.equal(await page.locator('link[rel="apple-touch-icon"]').getAttribute('href'), `${folder}icon-180.png`, `${theme}: touch icon not swapped`);
+      const manifest = readManifest(folder);
+      assert.equal(new URL(manifest.start_url, url(`${folder}manifest.webmanifest`)).href, new URL(rootManifest.start_url, url('manifest.webmanifest')).href, `${theme}: manifest would install a different app`);
+      assert.deepEqual(sharedFields(manifest), sharedFields(rootManifest), `${theme}: manifest differs from the root's`);
+      assert.deepEqual([manifest.theme_color, manifest.background_color], [primer, primer], `${theme}: manifest colors`);
+      const iconFiles = [...manifest.icons.map(icon => icon.src), 'icon-180.png'];
+      const iconSizes = await page.evaluate(srcs => Promise.all(srcs.map(async src => { const image = new Image(); image.src = src; await image.decode(); return `${image.naturalWidth}x${image.naturalHeight}`; })), iconFiles.map(name => url(folder + name)));
+      assert.deepEqual(iconSizes, [...manifest.icons.map(icon => icon.sizes), '180x180'], `${theme}: icon dimensions`);
     }
     assert.equal(palettes.size, 9, 'Each theme has its own surface palette');
     // Only one header panel at a time: the page's own drawers and the theme drawer close each other.
@@ -57,9 +78,12 @@ const noOverflow = async (page, label) => assert.equal(await page.evaluate(() =>
     await page.reload();
     await page.locator('#days .sunbeam-seraphs.theme-character').first().waitFor();
     assert.equal(await page.locator('#theme-select').inputValue(), 'sunbeam-seraphs');
+    assert.equal(await page.locator('link[rel="manifest"]').getAttribute('href'), 'assets/themes/sunbeam-seraphs/manifest.webmanifest');
 
     await page.goto(url('example.html'));
     await page.locator('#theme-toggle').waitFor();
+    // The demo has no manifest, so it cannot be installed and makes no icon promise.
+    assert.equal(await page.locator('#theme-icon-note').count(), 0);
     for (const theme of illustrated) {
       await page.locator('#theme-toggle').click();
       await page.locator('.theme-gallery summary').click();
@@ -166,6 +190,6 @@ const noOverflow = async (page, label) => assert.equal(await page.evaluate(() =>
     assert.equal(await blocked.locator('#days .theme-character').count(), 1);
     await blocked.close();
     assert.deepEqual(errors, []);
-    console.log('PASS: all nine themes, all 48 illustrated poses, palettes, theme-color, drawer coordination, keyboard/portrait picker, cross-tab synchronization, invalid IDs, unavailable storage, and reduced motion.');
+    console.log('PASS: all nine themes, all 48 illustrated poses, palettes, theme-color, home-screen icons and manifests, drawer coordination, keyboard/portrait picker, cross-tab synchronization, invalid IDs, unavailable storage, and reduced motion.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

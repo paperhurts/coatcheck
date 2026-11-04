@@ -20,7 +20,7 @@ See the [phone portrait picker](docs/previews/all-companions-picker.png) and ren
 
 ## Shared behavior
 
-`themes.js` owns the roster and the `cc_theme` browser preference. It validates stored IDs against the roster, falls back to Pocket Paint Pals for unknown themes, and handles unavailable storage without breaking its picker. A storage event updates the companion in other open tabs. Both dropdown and portrait selection update the same preference and accessible selection state. Pages load it without `defer`, so a saved palette is applied before the first paint; it also keeps the `theme-color` meta (the installed app's status bar) in step with the palette. The theme drawer and the live page's location/settings drawers close each other, so only one panel is open at a time.
+`themes.js` owns the roster and the `cc_theme` browser preference. It validates stored IDs against the roster, falls back to Pocket Paint Pals for unknown themes, and handles unavailable storage without breaking its picker. A storage event updates the companion in other open tabs. Both dropdown and portrait selection update the same preference and accessible selection state. Pages load it without `defer`, so a saved palette is applied before the first paint; it also keeps the `theme-color` meta (the installed app's status bar) in step with the palette, and points the manifest link and `apple-touch-icon` at the theme's own files, so the chosen companion becomes the home-screen icon. The theme drawer and the live page's location/settings drawers close each other, so only one panel is open at a time.
 
 The forecast engine owns weather data, thresholds, suitability, hourly advice, and expansion. The theme module changes only marked character holders and CSS variables. It retains original pixel markup so visitors can switch back without a forecast reload, losing their open day, or resetting the selected hour. A mutation observer reapplies the choice after async forecasts or calibration redraws. Page layout stays in each page's own styles; their glows and tints derive from the palette variables (`color-mix`), so every palette recolors them.
 
@@ -43,12 +43,22 @@ Each theme folder `assets/themes/<theme-id>/` holds one source master, `*-atlas.
 | --- | --- | --- |
 | `atlas.webp` | 960 × 640 (320px cells, 3× the 106px card character), about 200 KB | Forecast cards, scenario demo, primer-can bench |
 | `portrait.webp` | 256 × 256 crop of the ready pose, about 25 KB | **Meet all the painting pals** gallery |
+| `icon-180.png` | 180 × 180 ready pose on the theme's `--primer` | iOS home-screen icon (`apple-touch-icon`) |
+| `icon-192.png`, `icon-512.png` | Ready pose framed to fill the icon | Manifest icons; Chrome installs only with both sizes |
+| `icon-maskable-512.png` | Ready pose inside the central 80% circle | Android icon shapes (`"purpose": "maskable"`) |
+| `manifest.webmanifest` | The root manifest with the theme's colors | The installed app's icons, status bar, and launch screen |
 
-Run it after adding or editing a master (same Playwright setup as the test below): `node tools/build-theme-art.cjs`. The links above record source prompts and edits, generated with the built-in OpenAI image-generation tool. Original owner-supplied references are preserved in `assets/themes/references/`; the app does not load them.
+Run it after adding or editing a master (same Playwright setup as the test below): `node tools/build-theme-art.cjs`. It also builds Pocket Paint Pals' 192, 512, and maskable icons from `icon-180.png` by whole-pixel scaling. The links above record source prompts and edits, generated with the built-in OpenAI image-generation tool. Original owner-supplied references are preserved in `assets/themes/references/`; the app does not load them.
 
 The six poses cover painting a miniature, inspecting varnish, sheltering a miniature from rain, shivering in a scarf, fanning with a palette, and shaking a primer can. Details suit the companion: Pip’s drone becomes a rain canopy, Niblet uses little claws, Dozy conveys emotion with glowing eyes, and Sunny folds her wings to fit the cards. Each hot pose has a clean little sun. All illustrated sets share compact character sizing and gallery layout through `data-companion-style="illustrated"`; the reduced-motion rule applies to every theme.
 
 For each future theme, prepare all six poses with consistent scale, framing, and transparency, and save the master as `assets/themes/<theme-id>/<theme-id>-atlas.png`. Run the build tool, add a registry entry with an `artClass`, and add theme CSS for its `atlas.webp` and palette, including `--hot` and `--cold`. The generic character renderer uses that class and the six shared pose positions. Do not use a reference image as a fallback for missing poses. Themes must leave the whole-day card and full hourly strip together, honor reduced motion, and remain usable at 320px.
+
+### Home-screen icons
+
+The theme picked when someone installs CoatCheck becomes its icon. Browsers cannot change an installed app's icon on the spot: iOS keeps the icon until the app is removed and added again; Android Chrome rechecks the manifest about once a day and rebuilds the app with a new icon later (when it is closed, charging, and on Wi-Fi); desktop Chrome keeps the installed icon. The picker on `index.html` says so. `example.html` has no manifest, so it is not installable and shows no note.
+
+Each theme manifest is generated from the root `manifest.webmanifest`: same name, display, and icon file names, with the theme's colors, and a `start_url` that resolves to the same page. Browsers identify an installed app by that URL (there is no explicit `id`), so every theme stays one app. `index.html` deliberately gives `<link rel="manifest">` no `href`; `themes.js` sets the chosen theme's. With a default `href` in the markup, Chromium sometimes fetched that manifest before the script ran and kept it for the page's life (6 of 80 reloads in testing; none without it), which would install the wrong icon.
 
 ## Verification
 
@@ -62,4 +72,4 @@ node tests/themes-check.cjs
 
 If it is installed elsewhere, set `PLAYWRIGHT_MODULE` to the module path. Set `CC_BROWSER_CHANNEL=msedge` to use installed Edge instead of Playwright’s Chromium. The check uses local files, deterministic intercepted NWS responses, and a clock pinned to a fixed winter day, so it gives the same result in any season; it starts no server and contacts no weather service.
 
-It checks both pages, all nine choices and palettes, the `theme-color` sync, drawer coordination, all 48 illustrated poses, atlas/portrait loading and dimensions, stored choices, cross-tab synchronization, open-day/selected-hour preservation, calibration redraws, returning to the original sprites, that the pixel theme leaves fresh sprites alone, invalid theme IDs, unavailable storage, keyboard/portrait selection, reduced motion for every theme, and 320/390/1024px layouts. Any page error on any tested page fails the run.
+It checks both pages, all nine choices and palettes, the `theme-color` sync, each theme's manifest and icons (link swapping, shared app identity, colors, icon dimensions, Chrome's required sizes), drawer coordination, all 48 illustrated poses, atlas/portrait loading and dimensions, stored choices, cross-tab synchronization, open-day/selected-hour preservation, calibration redraws, returning to the original sprites, that the pixel theme leaves fresh sprites alone, invalid theme IDs, unavailable storage, keyboard/portrait selection, reduced motion for every theme, and 320/390/1024px layouts. Any page error on any tested page fails the run.

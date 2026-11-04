@@ -59,18 +59,20 @@ The [interactive sisters sample](sisters-preview.html) includes six illustrative
 
 *   `index.html` — The main weather application dashboard with live NWS API requests and browser Geolocation city-resolving.
 *   `example.html` — A static demo playground featuring a sprite gallery and 7 pre-populated extreme weather cards (hot, freezing, humid, rainy, etc.) to showcase all app states side-by-side regardless of local weather.
-*   `manifest.webmanifest` — Standard web manifest declaring PWA standalone launch parameters and colors.
-*   `icon-180.png` — An adorable 180x180 PWA home screen icon featuring the custom "Perfect Spray Can" pixel mascot on our midnight primer background.
+*   `manifest.webmanifest` — Standard web manifest declaring PWA standalone launch parameters, colors, and icons. Each companion folder has its own copy with that theme's colors and icons.
+*   `icon-180.png` — An adorable 180x180 PWA home screen icon featuring the custom "Perfect Spray Can" pixel mascot on our midnight primer background. `icon-192.png`, `icon-512.png`, and `icon-maskable-512.png` are pixel-perfect enlargements built from it.
 *   `README.md` — This file!
 *   `themes.js` / `themes.css` — Shared companion picker, persistence, character mapping, and theme styling.
-*   `assets/themes/` — Eight complete illustrated companion sets (source masters plus the small `atlas.webp`/`portrait.webp` the app loads), artwork prompts/provenance, and original character references.
-*   `tools/build-theme-art.cjs` — Optional Playwright script that rebuilds the web-size companion art from the source masters.
+*   `assets/themes/` — Eight complete illustrated companion sets (source masters plus the small `atlas.webp`/`portrait.webp` the app loads, and each companion's home-screen icons and manifest), artwork prompts/provenance, and original character references.
+*   `tools/build-theme-art.cjs` — Optional Playwright script that rebuilds the web-size companion art, icons, and theme manifests from the source masters.
 *   `tests/themes-check.cjs` — Optional Playwright regression check for the companion themes.
 *   `THEMES.md` — Theme roster, asset contract, and verification instructions.
 
 ---
 
 ## 📱 Mobile PWA Installation
+
+Pick your companion under **♡ Theme** first: it becomes the app icon when you install. To switch the icon later, remove CoatCheck from your home screen and add it again.
 
 ### On iOS (Safari)
 1.  Navigate to your live link: `https://paperhurts.github.io/coatcheck/`
