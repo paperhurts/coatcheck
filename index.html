@@ -11,7 +11,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CoatCheck*">
 <link rel="apple-touch-icon" href="icon-180.png">
-<link rel="manifest" href="manifest.webmanifest">
+<!-- themes.js sets href to the chosen companion's manifest. Leave it out here: Chromium can fetch a
+     default manifest before the script runs and keep it for the page's life, installing the wrong icon. -->
+<link rel="manifest">
 <meta name="theme-color" content="#0c0814">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">

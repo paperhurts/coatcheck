@@ -20,8 +20,23 @@
   let current;
   try { current = findTheme(localStorage.getItem(STORAGE_KEY)); }
   catch { current = themes[0]; }
-  document.documentElement.dataset.companionTheme = current.id;
-  document.documentElement.dataset.companionStyle = current.artClass ? 'illustrated' : 'pixel';
+
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  const manifest = document.querySelector('link[rel="manifest"]');
+  const touchIcon = document.querySelector('link[rel="apple-touch-icon"]');
+  const setHref = (link, href) => { if (link && link.getAttribute('href') !== href) link.setAttribute('href', href); };
+  function applyDocument() {
+    const html = document.documentElement;
+    html.dataset.companionTheme = current.id;
+    html.dataset.companionStyle = current.artClass ? 'illustrated' : 'pixel';
+    // Match the installed PWA's status bar to the palette.
+    if (themeColor) themeColor.content = getComputedStyle(html).getPropertyValue('--primer').trim();
+    // Install with the companion as the home-screen icon. Theme manifests share the root's start_url, so it stays one app.
+    const folder = current.artClass ? `assets/themes/${current.id}/` : '';
+    setHref(manifest, `${folder}manifest.webmanifest`);
+    setHref(touchIcon, `${folder}icon-180.png`);
+  }
+  applyDocument();
 
   // Keep the app's original sprites so theme changes never rebuild forecast cards.
   const originals = new WeakMap();
@@ -75,17 +90,13 @@
       <div class="theme-drawer-heading"><h2 id="theme-title">Pick your little painting pal</h2><button type="button" class="btn secondary" id="theme-close">Done</button></div>
       <label for="theme-select">Companion theme</label>
       <select id="theme-select">${themes.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select>
-      <p id="theme-description"></p><p class="theme-feedback" id="theme-feedback" role="status"></p>
+      <p id="theme-description"></p>${manifest ? '<p id="theme-icon-note">Your pal also becomes the app icon when you add CoatCheck to your home screen. Already added it? Remove it and add it again to switch the icon.</p>' : ''}<p class="theme-feedback" id="theme-feedback" role="status"></p>
       <details class="theme-gallery"><summary>Meet all the painting pals</summary><div class="theme-choice-grid">${themes.map(t => `<button type="button" class="theme-choice" data-theme-choice="${t.id}" aria-pressed="false"><img src="${t.artClass ? `assets/themes/${t.id}/portrait.webp` : 'icon-180.png'}" alt="" width="88" height="88" loading="lazy"><span class="theme-choice-name">${t.name}</span></button>`).join('')}</div></details>`;
     header.after(drawer);
     const select = drawer.querySelector('select');
     const feedback = drawer.querySelector('#theme-feedback');
-    const themeColor = document.querySelector('meta[name="theme-color"]');
     function apply() {
-      document.documentElement.dataset.companionTheme = current.id;
-      document.documentElement.dataset.companionStyle = current.artClass ? 'illustrated' : 'pixel';
-      // Match the installed PWA's status bar to the palette.
-      if (themeColor) themeColor.content = getComputedStyle(document.documentElement).getPropertyValue('--primer').trim();
+      applyDocument();
       select.value = current.id;
       drawer.querySelector('#theme-description').textContent = current.description;
       drawer.querySelectorAll('[data-theme-choice]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === current.id)));
