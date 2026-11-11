@@ -465,6 +465,86 @@
   .good .verdict-text { color: var(--good); }
   .meh .verdict-text { color: var(--meh); }
   .skip .verdict-text { color: var(--skip); }
+
+  /* Today's card: forecast for the hour we are in */
+  .now-band {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.18);
+  }
+
+  .now-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    color: var(--faint);
+  }
+
+  .now-pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--good);
+  }
+
+  .now-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+
+  .now-read {
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .now-read small {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--faint);
+    margin-left: 3px;
+  }
+
+  .now-call {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .now-call i {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+
+  .now-call.good { color: var(--good); }
+  .now-call.meh { color: var(--meh); }
+  .now-call.skip { color: var(--skip); }
+
+  /* Today's card once the 8 AM – 6 PM window is over: nothing to grade, nothing to expand */
+  .chip.closed { cursor: default; }
+  .chip.closed:hover { transform: none; }
+  .closed .swatch .name { color: var(--faint); }
+
+  .closed-note {
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--faint);
+  }
   
   /* Multi-color Pixel Art SVG Sprites */
   .sprite-container {
@@ -793,6 +873,13 @@
     .chip {
       animation: settle .35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
+    .now-pulse {
+      animation: now-pulse 2.4s ease-out infinite;
+    }
+    @keyframes now-pulse {
+      from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 55%, transparent); }
+      to { box-shadow: 0 0 0 9px transparent; }
+    }
     @keyframes settle {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: none; }
@@ -932,7 +1019,8 @@ const DEFAULT_LOC = {lat: 29.6516, lon: -82.3248, name: "Gainesville, FL"};
 const NAMES = {
   good: ["Perfect Prime", "Clean Basecoat", "Glass Finish", "Crisp Edge", "Brush Ready", "Golden Cure"],
   meh:  ["Tacky Finish Warning", "Proceed with Caution", "High Dry-Tip Hazard", "Thin Coats Only", "Slight Moisture", "Watch the Horizon"],
-  skip: ["Frosting Danger", "Wash Out!", "Primer Orange-Peel", "Bench Painting Only", "Close the Lid", "Wet Paint Clogging"]
+  skip: ["Frosting Danger", "Wash Out!", "Primer Orange-Peel", "Bench Painting Only", "Close the Lid", "Wet Paint Clogging"],
+  closed: ["Brushes Down"]
 };
 
 // Color palettes for cute pixel sprites
@@ -1229,6 +1317,7 @@ function calculatePeriodVerdict(p, settings) {
 
 // Maps specific aggregate conditions to specialized cute sprites
 function getDaySprite(d) {
+  if (d.closed) return "bench";
   if (d.rain > 30) return "rainy";
   if (d.rh > 75) return "humid";
   if (d.hi > 92) return "hot";
@@ -1238,10 +1327,20 @@ function getDaySprite(d) {
   return "good"; // Happy paint pot standing by brush
 }
 
+// The forecast period covering this moment, or null when the forecast doesn't reach now (a stale cache)
+function currentPeriod(periods, now = Date.now()) {
+  return periods.find(p => {
+    const start = new Date(p.startTime).getTime();
+    const end = p.endTime ? new Date(p.endTime).getTime() : start + 3600000;
+    return start <= now && now < end;
+  }) || null;
+}
+
 // Weather Aggregation for 8:00 AM – 6:00 PM Window
 function aggregate(periods) {
   const days = new Map();
-  const todayStr = new Date().toISOString().slice(0, 10);
+  // "Today" is the forecast location's own calendar date, read off the current hour's timestamp
+  const todayKey = currentPeriod(periods)?.startTime.slice(0, 10);
   
   for (const p of periods) {
     const dt = new Date(p.startTime);
@@ -1249,6 +1348,7 @@ function aggregate(periods) {
     
     if (!days.has(dkey)) {
       days.set(dkey, {
+        key: dkey,
         date: dt,
         hi: -Infinity,
         lo: Infinity,
@@ -1273,11 +1373,16 @@ function aggregate(periods) {
   }
   
   return [...days.values()]
-    .filter(d => {
-      const dkey = d.date.toISOString().slice(0, 10);
-      return dkey === todayStr || d.dayHrs >= 3;
-    })
+    .filter(d => d.key === todayKey || d.dayHrs >= 3)
     .map(d => {
+      if (d.dayHrs === 0) {
+        // Today after 6 PM: no window hours remain, so there is nothing to average or grade
+        d.closed = true;
+        d.rh = null;
+        d.rain = null;
+        d.verdict = "closed";
+        return d;
+      }
       d.rh = d.rhs.length ? Math.round(d.rhs.reduce((a,b)=>a+b)/d.rhs.length) : 50;
       d.rain = d.rains.length ? Math.max(...d.rains) : 0;
       d.verdict = verdict(d);
@@ -1396,11 +1501,11 @@ function toggleHourly(index) {
   
   const isHidden = panel.classList.contains("hidden");
   
-  document.querySelectorAll(".hourly-panel").forEach((p, idx) => {
-    if (idx !== index) {
+  // Match by element, not position: a closed card has no panel, so positions don't line up with cards
+  document.querySelectorAll(".hourly-panel").forEach(p => {
+    if (p !== panel) {
       p.classList.add("hidden");
-      const c = document.querySelector(`.chip[data-index="${idx}"]`);
-      if (c) c.classList.remove("expanded");
+      p.closest(".chip")?.classList.remove("expanded");
     }
   });
   
@@ -1414,6 +1519,21 @@ function toggleHourly(index) {
   }
 }
 
+function renderNowBand(p) {
+  const call = calculatePeriodVerdict(p, getSettings());
+  const time = new Date().toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  const rh = p.relativeHumidity?.value;
+  return `
+        <div class="now-band">
+          <div class="now-head label"><span class="now-pulse"></span>Right now · ${time}</div>
+          <div class="now-row">
+            <div class="now-read">${p.temperature}°<small>F</small></div>
+            <div class="now-read">${rh ?? "–"}<small>% RH</small></div>
+            <div class="now-call ${call}"><i></i>${{good:"Paint now", meh:"Careful", skip:"Hold off"}[call]}</div>
+          </div>
+        </div>`;
+}
+
 function render(days, stale) {
   const el = document.getElementById("days");
   if (!days || days.length === 0) {
@@ -1421,12 +1541,43 @@ function render(days, stale) {
     return;
   }
   
+  // Current-hour reading for today's card, taken from the forecast already on hand
+  let nowPeriod = null;
+  try { nowPeriod = currentPeriod(JSON.parse(LS.getItem("cc_raw_periods")) || []); } catch(e) {}
+  const nowKey = nowPeriod?.startTime.slice(0, 10);
+
   el.innerHTML = days.map((d, i) => {
     const spriteName = getDaySprite(d);
     const name = NAMES[d.verdict][i % NAMES[d.verdict].length];
     const dayName = d.date.toLocaleDateString(undefined, { weekday: "long" });
     const dateStr = d.date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
     
+    const nowBand = nowPeriod && d.key === nowKey ? renderNowBand(nowPeriod) : "";
+    const dayline = `
+          <div class="dayline">
+            <div class="day"><strong>${dayName}</strong><span class="date-sub">${dateStr}</span></div>
+            <div class="temps"><b>${d.hi}°</b><span class="temp-sep">/</span><span class="low">${d.lo}°</span></div>
+          </div>`;
+
+    if (d.closed) {
+      return `
+      <div class="chip closed" data-index="${i}">
+        <div class="swatch">
+          <div style="flex:1; padding-right:12px;">
+            <div class="code label">FIELD LOG · AFTER HOURS</div>
+            <div class="name">${name}</div>
+          </div>
+          ${sprite(spriteName, d.verdict)}
+        </div>
+        ${nowBand}
+        <div class="body">
+          ${dayline}
+          <div class="closed-note">Today's 8 AM – 6 PM painting window has closed. The next card has tomorrow's outlook.</div>
+        </div>
+      </div>
+    `;
+    }
+
     return `
       <div class="chip ${d.verdict}" data-index="${i}" onclick="toggleHourly(${i})">
         <div class="swatch">
@@ -1436,11 +1587,9 @@ function render(days, stale) {
           </div>
           ${sprite(spriteName, d.verdict)}
         </div>
+        ${nowBand}
         <div class="body">
-          <div class="dayline">
-            <div class="day"><strong>${dayName}</strong><span class="date-sub">${dateStr}</span></div>
-            <div class="temps"><b>${d.hi}°</b><span class="temp-sep">/</span><span class="low">${d.lo}°</span></div>
-          </div>
+          ${dayline}
           <div class="stats">
             <div class="stat">
               <div class="k label">Humidity</div>

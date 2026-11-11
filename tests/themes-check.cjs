@@ -32,6 +32,8 @@ const sharedFields = ({ start_url, theme_color, background_color, ...shared }) =
     await context.route('https://api.weather.gov/**', route => route.fulfill({ contentType: 'application/geo+json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(route.request().url().includes('/points/') ? { properties: { forecastHourly: 'https://api.weather.gov/test-hourly' } } : { properties: { periods } }) }));
     await page.goto(url('index.html'));
     await page.locator('.chip').first().waitFor();
+    // Today's card carries the forecast for the hour we are in.
+    assert.match(await page.locator('.chip').first().locator('.now-band').innerText(), /74°\s*F\s+55\s*% RH\s+Paint now/i);
     await page.locator('.chip').first().click();
     await page.locator('.hour-block').nth(4).click();
     const inspection = await page.locator('#inspect-0').innerHTML();
@@ -178,6 +180,24 @@ const sharedFields = ({ start_url, theme_color, background_color, ...shared }) =
       assert.equal(await page.locator('#can-sprite-holder').evaluate(el => getComputedStyle(el).animationName), 'none', `${theme}: can shakes under reduced motion`);
       await page.locator('#interactive-spray-can').evaluate(el => el.classList.remove('shaking'));
     }
+    // After 6 pm today's card has no window hours left: it says so instead of grading made-up numbers.
+    const hour = (day, h) => ({ startTime: `2026-01-${day}T${String(h).padStart(2, '0')}:00:00-05:00`, temperature: 60 + h, relativeHumidity: { value: 84 }, probabilityOfPrecipitation: { value: 0 } });
+    const evening = [...[20, 21, 22, 23].map(h => hour(15, h)), ...Array.from({ length: 24 }, (_, h) => hour(16, h))];
+    await context.clock.setFixedTime(new Date(`${today}T20:30:00-05:00`));
+    await context.route('https://api.weather.gov/test-hourly', route => route.fulfill({ contentType: 'application/geo+json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ properties: { periods: evening } }) }));
+    await page.goto(url('index.html'));
+    await page.locator('.chip.closed').waitFor();
+    assert.equal(await page.locator('.chip').first().evaluate(el => el.classList.contains('closed')), true, 'Tonight should be the first card');
+    assert.equal(await page.locator('.now-band').count(), 1, 'Only today shows a current reading');
+    assert.match(await page.locator('.chip.closed .now-band').innerText(), /80°\s*F\s+84\s*% RH/i);
+    assert.match(await page.locator('.chip.closed').innerText(), /window has closed/);
+    assert.equal(await page.locator('.chip.closed .hourly-panel').count(), 0);
+    await noOverflow(page, 'Closed card overflows');
+    // Opening a later day still pairs each panel with its own card.
+    await page.locator('.chip').nth(1).click();
+    assert.equal(await page.locator('#hourly-1').isVisible(), true);
+    assert.equal(await page.locator('.chip').nth(1).evaluate(el => el.classList.contains('expanded')), true);
+    assert.equal(await page.locator('#hourly-1 .hour-block').count(), 10);
     await context.close();
     const blocked = await browser.newPage();
     watch(blocked);
