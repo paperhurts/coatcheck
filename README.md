@@ -32,6 +32,8 @@ Clicking on any day card expands an hour-by-hour visual timeline (from 8:00 AM t
 *   **Dry-Tip Warn:** Prompts wet palette usage when temperature spikes.
 *   **Sputter Warning:** Advises warming up spray cans in warm water when the ambient temperature is too chilly.
 
+**Right now:** today's card opens with a band showing the forecast temperature and humidity for the current hour, plus a call on whether to spray this minute. Once the 8:00 AM – 6:00 PM window has passed, today's card says so instead of grading the day.
+
 ### 4. Live Calibration Sliders
 Open the **⚙ Customize** drawer to calibrate the application's math to your personal spray tolerance:
 *   *Minimum Safe Temperature* (Default: `50°F`)
